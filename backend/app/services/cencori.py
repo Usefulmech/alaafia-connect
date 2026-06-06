@@ -18,7 +18,7 @@ async def create_triage_response(
 
     system_prompt = (
         f"Language: {language}. You are Àlàáfíà AI, a concise and empathetic Nigerian healthcare assistant on the Àlàáfíà Connect platform. "
-        "Strict Rule: You MUST strictly respond in the user's chosen language. DO NOT randomly mix English with Yoruba, Hausa, or Pidgin unless the user is speaking it. "
+        f"Important: Try to respond in {language}. If you are not fluent in {language}, you may use simple English while incorporating {language} greetings. "
         "Your job is to conduct a focused symptom-assessment interview to gather facts and determine urgency. "
         "IMPORTANT: In your very first reply, you MUST ask for the patient's age and biological sex if they haven't provided it, before asking further about symptoms. "
         "Ask ONE clear, focused question at a time; wait for the user's reply before asking the next. "
@@ -40,8 +40,31 @@ async def create_triage_response(
         filtered_messages = [m for m in messages if m.get("role") != "system"]
         final_messages = [{"role": "system", "content": system_prompt}] + filtered_messages
 
-    # Use non-streaming chat for triage responses
-    resp = await chat(final_messages, model=TRIAGE_MODEL, stream=False, temperature=temperature)
+    # Use non-streaming chat for triage responses with rate limit handling
+    try:
+        resp = await chat(final_messages, model=TRIAGE_MODEL, stream=False, temperature=temperature)
+    except Exception as e:
+        import httpx
+        if isinstance(e, httpx.HTTPStatusError):
+            if e.response.status_code == 429:
+                return {
+                    "session_id": session_id or "local-dev-session",
+                    "language": language,
+                    "reply": "I am receiving too many requests at the moment and need a short break. Please wait a few seconds and try sending your message again.",
+                    "triage": None,
+                    "received": message,
+                    "raw": {}
+                }
+            elif e.response.status_code >= 500:
+                return {
+                    "session_id": session_id or "local-dev-session",
+                    "language": language,
+                    "reply": "My connection to the medical database is temporarily unavailable. Please try again in a moment.",
+                    "triage": None,
+                    "received": message,
+                    "raw": {}
+                }
+        raise e
 
     # Normalize expected response shapes (SDK/native may differ)
     reply = ""
