@@ -53,10 +53,19 @@ export default function Onboarding() {
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
     }
 
+    // Trigger translate instantly without reload
+    setTimeout(() => {
+      const combo = document.querySelector('.goog-te-combo');
+      if (combo) {
+        combo.value = targetLang;
+        combo.dispatchEvent(new Event('change'));
+      }
+    }, 100);
+
     if (selectedRole === 'doctor') {
-      window.location.href = '/doctor-onboarding'
+      navigate('/doctor-onboarding')
     } else {
-      window.location.href = '/home'
+      navigate('/home')
     }
   }
 
@@ -140,8 +149,8 @@ export default function Onboarding() {
             <button
               onClick={() => {
                  if (patPhone.trim().length >= 10) {
-                   if (selectedRole === 'doctor') window.location.href = '/doctor-portal'
-                   else window.location.href = '/home'
+                   if (selectedRole === 'doctor') navigate('/doctor-portal')
+                   else navigate('/home')
                  } else {
                    alert("Please enter a valid phone number to continue.")
                  }
@@ -218,8 +227,8 @@ export default function Onboarding() {
                    if (!localStorage.getItem('patientName')) {
                      localStorage.setItem('patientName', selectedRole === 'doctor' ? 'Dr. Adeoti Clinton' : 'Salami Olusegun')
                    }
-                   if (selectedRole === 'doctor') window.location.href = '/doctor-portal'
-                   else window.location.href = '/home'
+                   if (selectedRole === 'doctor') navigate('/doctor-portal')
+                   else navigate('/home')
                  } else {
                    alert("Please enter a valid phone number and select a role.")
                  }
@@ -544,7 +553,16 @@ export default function Onboarding() {
                   document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`
                 }
 
-                window.location.href = '/home'
+                // Trigger translate instantly without reload
+                setTimeout(() => {
+                  const combo = document.querySelector('.goog-te-combo');
+                  if (combo) {
+                    combo.value = targetLang;
+                    combo.dispatchEvent(new Event('change'));
+                  }
+                }, 100);
+
+                navigate('/home')
               }}
               className="w-full py-3 text-on-surface-variant font-bold flex items-center justify-center text-sm hover:text-primary transition-colors"
             >

@@ -51,44 +51,39 @@ export default function Consultation() {
     }
   }, [messages, isTyping])
 
-  const paystackConfig = {
-    reference: (new Date()).getTime().toString(),
-    email: "patient@alaafiaconnect.ng",
-    amount: 1000 * 100, // in kobo
-    publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_48555e5db5c6dbbd551edee5e5422896582e0e4b',
-  };
-  const initializePayment = usePaystackPayment(paystackConfig);
-
-  async function initiatePayment() {
-    initializePayment({
-      onSuccess: async (reference) => {
-        setPhase('processing');
-        try {
-          const user = await account.get();
-          const tr = JSON.parse(localStorage.getItem('triageResult') || '{}');
-          const tSum = tr.summary || tr.title || '';
-          
-          await databases.createDocument(
-            import.meta.env.VITE_APPWRITE_DATABASE_ID || '6a22b2fa00080379d03f',
-            'consultations',
-            ID.unique(),
-            {
-              patient_id: user.$id,
-              status: 'paid',
-              triage_summary: tSum,
-              created_at: new Date().toISOString()
-            }
-          );
-          setPhase('success');
-        } catch (e) {
-          console.error("Appwrite save failed", e);
-          setPhase('success'); // allow bypass if testing without full auth setup
-        }
-      },
-      onClose: () => {
-        console.log('Payment modal closed');
+  // Mock Payment Logic
+  async function simulatePayment() {
+    setPhase('processing');
+    setTimeout(async () => {
+      try {
+        const user = await account.get();
+        const tr = JSON.parse(localStorage.getItem('triageResult') || '{}');
+        const tSum = tr.summary || tr.title || '';
+        
+        await databases.createDocument(
+          import.meta.env.VITE_APPWRITE_DATABASE_ID || '6a22b2fa00080379d03f',
+          'consultations',
+          ID.unique(),
+          {
+            patient_id: user.$id,
+            status: 'paid',
+            triage_summary: tSum,
+            created_at: new Date().toISOString()
+          }
+        );
+        setPhase('success');
+      } catch (e) {
+        console.error("Appwrite save failed", e);
+        setPhase('success'); // allow bypass if testing
       }
-    });
+    }, 1500);
+  }
+
+  function handleCardChange(e) {
+    const val = e.target.value.replace(/\s+/g, '');
+    if (val.length >= 16) {
+      simulatePayment();
+    }
   }
 
   function enterChat() {
@@ -99,7 +94,7 @@ export default function Consultation() {
     const triageStr = (() => {
       try {
         const t = JSON.parse(localStorage.getItem('triageResult') || '{}')
-        return t.summary ? `Triage summary: "${t.summary}" – Urgency: ${t.title}` : 'No triage summary on file.'
+        return t.summary ? `Triage summary: "${t.summary}" - Urgency: ${t.title}` : 'No triage summary on file.'
       } catch (_) {
         return 'No triage summary on file.'
       }
@@ -128,7 +123,7 @@ export default function Consultation() {
       const res = await fetch(`${API_BASE_URL}/api/triage/chat-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history, model: 'claude-3-5-sonnet', temperature: 0.0 }),
+        body: JSON.stringify({ messages: history, temperature: 0.2 }),
       })
       setIsTyping(false)
       if (!res.ok) {
@@ -231,7 +226,7 @@ export default function Consultation() {
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <p className="font-bold text-primary" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 18 }}>₦1,000</p>
+              <p className="font-bold text-primary" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 18 }}>{"\u20A6"}1,000</p>
               <p className="text-on-surface-variant" style={{ fontSize: 11 }}>per session</p>
             </div>
           </div>
@@ -262,15 +257,15 @@ export default function Consultation() {
             <div className="p-4 space-y-4">
               {/* Fee Breakdown */}
               <div className="space-y-2">
-                {[['Professional Fee', '₦1,000.00'], ['Platform Fee', '₦0.00']].map(([lbl, val]) => (
+                {[['Professional Fee', '1,000.00'], ['Platform Fee', '0.00']].map(([lbl, val]) => (
                   <div key={lbl} className="flex justify-between items-center">
                     <span className="text-on-surface-variant text-sm">{lbl}</span>
-                    <span className="font-semibold text-on-surface text-sm">{val}</span>
+                    <span className="font-semibold text-on-surface text-sm">{"\u20A6"}{val}</span>
                   </div>
                 ))}
                 <div className="border-t border-outline-variant/50 pt-2 flex justify-between items-center">
                   <span className="font-bold text-on-surface" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 15 }}>Total</span>
-                  <span className="font-bold text-primary" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 18 }}>₦1,000.00</span>
+                  <span className="font-bold text-primary" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 18 }}>{"\u20A6"}1,000.00</span>
                 </div>
               </div>
 
@@ -306,6 +301,7 @@ export default function Consultation() {
                     <input 
                       type="text" 
                       placeholder="Card Number" 
+                      onChange={handleCardChange}
                       className="w-full h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
                     />
                     <div className="flex gap-3">
@@ -324,7 +320,7 @@ export default function Consultation() {
 
                   {/* Transfer Content */}
                   <div id="content-transfer" className="pay-content hidden text-center py-2">
-                    <p className="text-sm text-on-surface-variant mb-2">Transfer exactly <strong className="text-primary">₦1,000.00</strong> to:</p>
+                    <p className="text-sm text-on-surface-variant mb-2">Transfer exactly <strong className="text-primary">{"\u20A6"}1,000.00</strong> to:</p>
                     <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 font-mono text-on-surface text-lg font-bold mb-2 tracking-widest">
                       0123456789
                     </div>
@@ -351,7 +347,7 @@ export default function Consultation() {
 
               {/* Pay Button */}
               <button
-                onClick={initiatePayment}
+                onClick={simulatePayment}
                 className="pay-glow w-full rounded-xl text-white font-bold py-4 flex items-center justify-center gap-2 active:scale-[.98] transition-all"
                 style={{ background: '#005c55', fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 14, letterSpacing: '0.05em' }}
               >
@@ -383,7 +379,7 @@ export default function Consultation() {
             <svg translate="no" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#a3faef" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
           <p className="font-bold text-on-surface text-center" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 20 }}>Payment Successful!</p>
-          <p className="text-on-surface-variant text-center mt-1 mb-5 text-sm">₦1,000 charged successfully</p>
+          <p className="text-on-surface-variant text-center mt-1 mb-5 text-sm">{"\u20A6"}1,000 charged successfully</p>
           <div className="bg-surface-container-low rounded-2xl p-4 w-full max-w-sm border border-outline-variant/40 mb-5">
             {[['Transaction ID', 'TXN-ALC-009922'], ['Doctor', 'Dr. Adeoti Clinton']].map(([lbl, val]) => (
               <div key={lbl} className="flex justify-between text-sm mb-1">
@@ -428,7 +424,7 @@ export default function Consultation() {
           <div
             ref={chatAreaRef}
             className="chat-area flex-1 px-4 pt-4 pb-4 overflow-y-auto page-content"
-            style={{ paddingTop: 130, paddingBottom: 130 }}
+            style={{ paddingTop: 130, paddingBottom: 160 }}
           >
             {messages.map((msg, i) => (
               <div key={i} className={`flex items-start gap-2 mb-4 msg-pop ${msg.role === 'user' ? 'justify-end' : ''}`}>

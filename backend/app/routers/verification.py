@@ -70,3 +70,30 @@ async def verify_otp(request: VerifyOtpRequest):
         name=name,
         message="Phone verified successfully.",
     )
+
+class NinVerificationRequest(BaseModel):
+    nin: str
+
+class NinVerificationResponse(BaseModel):
+    status: str
+    message: str
+    data: dict
+
+@router.post("/nin", response_model=NinVerificationResponse)
+async def verify_nin(request: NinVerificationRequest):
+    nin = request.nin.strip()
+    if len(nin) != 11 or not nin.isdigit():
+        raise HTTPException(status_code=400, detail="Invalid NIN format. Expected 11 digits.")
+    
+    # Mock successful NIN verification
+    return NinVerificationResponse(
+        status="success",
+        message="NIN verified successfully.",
+        data={
+            "nin": nin,
+            "firstname": "Doctor",
+            "surname": "Verified",
+            "gender": "M",
+            "birthdate": "1980-01-01"
+        }
+    )
