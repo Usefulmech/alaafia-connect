@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -24,3 +24,9 @@ app.include_router(voice.router, prefix="/api/voice", tags=["voice"])
 app.include_router(facilities.router, prefix="/api/facilities", tags=["facilities"])
 app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
 app.include_router(verification.router, prefix="/api/verification", tags=["verification"])
+
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port)
