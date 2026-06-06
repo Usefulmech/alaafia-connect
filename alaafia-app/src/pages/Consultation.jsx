@@ -442,11 +442,11 @@ export default function Consultation() {
                           <div key={j} className="wave-bar w-[3px] bg-primary" style={{ height: h }} />
                         ))}
                       </div>
-                      <p className="text-on-surface text-sm">{msg.content}</p>
+                      <p className="text-on-surface text-sm notranslate">{msg.content}</p>
                     </div>
                   ) : (
                     <div
-                      className={`rounded-2xl px-4 py-3 leading-relaxed whitespace-pre-wrap ${msg.role === 'assistant' ? 'bg-primary text-white rounded-tl-none' : 'bg-surface-variant text-on-surface rounded-tr-none'}`}
+                      className={`rounded-2xl px-4 py-3 leading-relaxed whitespace-pre-wrap notranslate ${msg.role === 'assistant' ? 'bg-primary text-white rounded-tl-none' : 'bg-surface-variant text-on-surface rounded-tr-none'}`}
                       style={{ fontSize: 14 }}
                     >
                       {msg.content}

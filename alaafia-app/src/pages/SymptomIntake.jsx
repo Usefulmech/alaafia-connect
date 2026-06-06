@@ -286,12 +286,12 @@ export default function SymptomIntake() {
     const idx = content.indexOf('TRIAGE:');
     const display = idx !== -1 ? content.slice(0, idx).trim() : content;
     return (
-      <>
+      <span className="notranslate">
         {display}
         {streaming && isLastBot && display.length > 0 && (
           <span className="inline-block w-[2px] h-[1em] bg-white/90 ml-[2px] align-middle animate-blink" />
         )}
-      </>
+      </span>
     );
   }
 
