@@ -97,7 +97,7 @@ export default function Consultation() {
     const openMsg = `Good day, I've reviewed your AI triage summary.\n\n${triageStr}\n\nBased on what I see, let me ask you a few follow-up questions to better understand your condition.\n\n� Dr. Adeoti`
     const newMessages = [{ role: 'assistant', content: openMsg, time: now() }]
     setMessages(newMessages)
-    setDocMessages(prev => [...prev, { role: 'assistant', content: openMsg }])
+    setDocMessages(prev => [...prev, { role: 'user', content: 'Hello doctor.' }, { role: 'assistant', content: openMsg }])
     setExchangeCount(1)
   }
 

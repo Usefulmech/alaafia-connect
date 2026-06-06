@@ -215,9 +215,7 @@ export default function SymptomIntake() {
         timestamp: new Date(),
       },
     ]);
-    conversationRef.current = [
-      { role: 'assistant', content: welcomeText },
-    ];
+    conversationRef.current = [];
     setSessionStarted(true);
   }
 
