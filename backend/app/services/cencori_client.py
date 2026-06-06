@@ -23,8 +23,8 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "https://api.cencori.com"
-PRIMARY_MEDICAL_MODEL = "claude-3-5-sonnet"
-TRIAGE_MODEL = "gemini-2.5-flash"
+PRIMARY_MEDICAL_MODEL = "gemini-3.5-flash"
+TRIAGE_MODEL = "gemini-3.5-flash"
 
 CHAT_PATH = "chat/completions"
 STT = "speech-to-text"
@@ -61,21 +61,25 @@ class CencoriClient:
     async def close(self) -> None:
         await self._client.aclose()
 
-    async def chat(self, messages: List[Dict[str, str]], model: str = PRIMARY_MEDICAL_MODEL, stream: bool = False, **kwargs) -> Any:
+    async def chat(self, messages: List[Dict[str, str]], model: Optional[str] = PRIMARY_MEDICAL_MODEL, stream: bool = False, **kwargs) -> Any:
         """Send chat-style messages and return parsed JSON.
 
         Uses `POST /v1/chat/completions` matching the official Cencori OpenAI-compatible API.
         """
-        payload: Dict[str, Any] = {"model": model, "messages": messages, "stream": stream}
+        payload: Dict[str, Any] = {"messages": messages, "stream": stream}
+        if model:
+            payload["model"] = model
         payload.update(kwargs)
         url = CHAT_PATH
         resp = await self._client.post(url, json=payload)
         resp.raise_for_status()
         return resp.json()
 
-    async def completion(self, prompt: str, model: str = PRIMARY_MEDICAL_MODEL, max_tokens: int = 512, temperature: float = 0.0, **kwargs) -> Any:
+    async def completion(self, prompt: str, model: Optional[str] = PRIMARY_MEDICAL_MODEL, max_tokens: int = 512, temperature: float = 0.0, **kwargs) -> Any:
         """Send a single-text completion using an OpenAI-like `/v1/responses` payload."""
-        payload: Dict[str, Any] = {"model": model, "input": prompt, "max_tokens": max_tokens, "temperature": temperature}
+        payload: Dict[str, Any] = {"input": prompt, "max_tokens": max_tokens, "temperature": temperature}
+        if model:
+            payload["model"] = model
         payload.update(kwargs)
         url = "/v1/responses"
         resp = await self._client.post(url, json=payload)
@@ -90,8 +94,10 @@ class CencoriClient:
         ]
         return await self.chat(messages, model=TRIAGE_MODEL, stream=False, **kwargs)
 
-    async def stream_chat(self, messages: List[Dict[str, str]], model: str = PRIMARY_MEDICAL_MODEL, **kwargs) -> AsyncIterator[bytes]:
-        payload: Dict[str, Any] = {"model": model, "messages": messages, "stream": True}
+    async def stream_chat(self, messages: List[Dict[str, str]], model: Optional[str] = PRIMARY_MEDICAL_MODEL, **kwargs) -> AsyncIterator[bytes]:
+        payload: Dict[str, Any] = {"messages": messages, "stream": True}
+        if model:
+            payload["model"] = model
         payload.update(kwargs)
         url = CHAT_PATH
 
@@ -112,18 +118,18 @@ def get_client(api_key: Optional[str] = None, base_url: Optional[str] = None, ti
     return _CLIENT
 
 
-async def chat(messages: List[Dict[str, str]], model: str = PRIMARY_MEDICAL_MODEL, stream: bool = False, **kwargs) -> Any:
+async def chat(messages: List[Dict[str, str]], model: Optional[str] = PRIMARY_MEDICAL_MODEL, stream: bool = False, **kwargs) -> Any:
     client = get_client()
     return await client.chat(messages, model=model, stream=stream, **kwargs)
 
 
-async def stream_chat(messages: List[Dict[str, str]], model: str = PRIMARY_MEDICAL_MODEL, **kwargs) -> AsyncIterator[bytes]:
+async def stream_chat(messages: List[Dict[str, str]], model: Optional[str] = PRIMARY_MEDICAL_MODEL, **kwargs) -> AsyncIterator[bytes]:
     client = get_client()
     async for chunk in client.stream_chat(messages, model=model, **kwargs):
         yield chunk
 
 
-async def completion(prompt: str, model: str = PRIMARY_MEDICAL_MODEL, **kwargs) -> Any:
+async def completion(prompt: str, model: Optional[str] = PRIMARY_MEDICAL_MODEL, **kwargs) -> Any:
     client = get_client()
     return await client.completion(prompt, model=model, **kwargs)
 
