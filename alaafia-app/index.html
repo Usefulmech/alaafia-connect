@@ -14,34 +14,14 @@
         />
     </head>
     <style>
-      /* Hide the Google Translate toolbar and tooltips completely */
-      body { top: 0 !important; }
-      .skiptranslate { display: none !important; }
-      .goog-te-balloon-frame { display: none !important; }
-      .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-      font { background: transparent !important; color: inherit !important; box-shadow: none !important; }
+      /* Disabled because the Backend now handles native string translation */
     </style>
     <body>
-        <div id="google_translate_element" style="display:none;"></div>
-        <script type="text/javascript">
-          function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                autoDisplay: false
-            }, 'google_translate_element');
-          }
-        </script>
-        <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <!-- Google Translate Widget Disabled (Backend Python handles translation) -->
         <script>
+          // LocalStorage language state is still needed for the backend to read.
           (function() {
-            const langMap = { 'English': 'en', 'Yoruba': 'yo', 'Hausa': 'ha', 'Igbo': 'ig', 'Pidgin': 'en' };
-            const selectedLang = localStorage.getItem('selectedLanguage') || 'English';
-            const targetLang = langMap[selectedLang] || 'en';
-            if (targetLang !== 'en') {
-              document.cookie = `googtrans=/en/${targetLang}; path=/`;
-            } else {
-              document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-            }
+            // State initialization only. No googtrans cookie injection needed.
           })();
         </script>
         <div id="root"></div>
