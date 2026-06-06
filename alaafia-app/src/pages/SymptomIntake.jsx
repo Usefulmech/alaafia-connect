@@ -5,21 +5,12 @@ import BottomNav from '../components/BottomNav.jsx';
 
 // --- Constants ------------------------------------------------------------------------------------------------------------------
 
-const SYSTEM_PROMPT = `You are Àlàáfíà AI, a concise and empathetic Nigerian healthcare assistant on the Àláfíà Connect platform.
-Your job is to conduct a focused symptom-assessment interview to gather facts and determine urgency.
-- Ask ONE clear, focused question at a time; wait for the user's reply before asking the next.
-- Use warm, culturally aware phrasing; optionally include a short Yoruba/Hausa greeting (one word or short phrase).
-- After 3–5 user exchanges, append a single-line TRIAGE verdict in this exact format at the end of your assistant message:
-  TRIAGE: [EMERGENCY|SEE_DOCTOR_TODAY|MONITOR_AT_HOME] � [brief reason]
-- Keep the main response concise (1–4 short sentences) and do not provide definitive diagnoses � only possible causes and recommended next steps.
-- If TRIAGE is EMERGENCY: clearly instruct the user to call local emergency services immediately (e.g., call 112 or go to A&E).
-- At the end of your message include any brief follow-up question needed to clarify symptoms.
-- Use plain language suitable for a general audience.`;
+// System prompt is handled by the backend
 
 const DEMO_RESPONSES = [
   "Thank you for sharing that. On a scale of 1 to 10, how severe is the discomfort? And how long have you had this symptom?",
-  "I understand � are you coping okay? Does the symptom get worse at any particular time of day, or after eating, physical activity, or rest?",
-  "That's helpful to know. Have you experienced this before, or is this the first time? Do you have any pre-existing conditions such as diabetes, hypertension, or asthma?\n\nTRIAGE: SEE_DOCTOR_TODAY � Based on your reported symptoms, I recommend you see a qualified doctor within 24 hours for a proper clinical examination.",
+  "I understand  are you coping okay? Does the symptom get worse at any particular time of day, or after eating, physical activity, or rest?",
+  "That's helpful to know. Have you experienced this before, or is this the first time? Do you have any pre-existing conditions such as diabetes, hypertension, or asthma?\n\nTRIAGE: SEE_DOCTOR_TODAY  Based on your reported symptoms, I recommend you see a qualified doctor within 24 hours for a proper clinical examination.",
 ];
 
 const TRIAGE_CONFIG = {
@@ -225,7 +216,6 @@ export default function SymptomIntake() {
       },
     ]);
     conversationRef.current = [
-      { role: 'system', content: SYSTEM_PROMPT },
       { role: 'assistant', content: welcomeText },
     ];
     setSessionStarted(true);

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PrimaryHeader from '../components/PrimaryHeader.jsx'
 import BottomNav from '../components/BottomNav.jsx'
@@ -22,20 +22,7 @@ const MEDICATION_HISTORY = [
   },
 ]
 
-const CONSULTATION_HISTORY = [
-  {
-    title: 'General Review',
-    facility: 'Bridgeview Primary Care',
-    date: 'May 10, 2026',
-    outcome: 'Routine follow-up; stable blood pressure',
-  },
-  {
-    title: 'Urgent Care Assessment',
-    facility: 'Lagos City Clinic',
-    date: 'Apr 28, 2026',
-    outcome: 'Referred for lab testing and specialist review',
-  },
-]
+// Consultation history will be pulled dynamically from localStorage
 
 export default function History() {
   const navigate = useNavigate()
@@ -45,6 +32,35 @@ export default function History() {
   const hasActiveSymptoms = !!localStorage.getItem('symptoms')
   const hasCompletedTriage = !!localStorage.getItem('triageResult')
   const hasActiveConsultation = hasActiveSymptoms && !hasCompletedTriage
+
+  const [consultations, setConsultations] = useState([])
+
+  useEffect(() => {
+    // Dynamically build consultation history from active local session data
+    const historyList = []
+    const triageRes = localStorage.getItem('triageResult')
+    const consultSummary = localStorage.getItem('consultationSummary')
+    
+    if (triageRes) {
+      historyList.push({
+        title: 'AI Symptom Triage',
+        facility: 'Àlàáfíà AI',
+        date: new Date().toLocaleDateString('en-NG'),
+        outcome: triageRes.length > 60 ? triageRes.substring(0, 60) + '...' : triageRes,
+      })
+    }
+    
+    if (consultSummary) {
+      historyList.push({
+        title: 'Teleconsultation',
+        facility: localStorage.getItem('doctorName') || 'Dr. Adeoti Clinton',
+        date: localStorage.getItem('consultationStart') || new Date().toLocaleDateString('en-NG'),
+        outcome: 'Completed teleconsultation. Review Patient Pass for details.',
+      })
+    }
+
+    setConsultations(historyList.reverse())
+  }, [])
 
   useEffect(() => {
     if (!selectedLang) {
@@ -144,7 +160,7 @@ export default function History() {
           </div>
 
           <div className="flex flex-col gap-3">
-            {CONSULTATION_HISTORY.map((item, index) => (
+            {consultations.length > 0 ? consultations.map((item, index) => (
               <div key={index} className="rounded-xl border border-outline-variant bg-white p-5 shadow-sm hover:shadow-md transition-all">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -155,7 +171,11 @@ export default function History() {
                 </div>
                 <p className="text-xs text-on-surface-variant mt-3 leading-relaxed">{item.outcome}</p>
               </div>
-            ))}
+            )) : (
+              <div className="rounded-xl border border-outline-variant border-dashed bg-surface-container-lowest p-6 text-center">
+                <p className="text-sm text-on-surface-variant">No recent consultations recorded.</p>
+              </div>
+            )}
           </div>
         </section>
       </main>
