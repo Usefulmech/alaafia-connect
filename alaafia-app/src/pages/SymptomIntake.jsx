@@ -159,7 +159,6 @@ export default function SymptomIntake() {
   const navigate = useNavigate();
 
   // -- State --
-  // -- State --
   const PLACEHOLDERS = {
     EN: 'Describe your symptoms or attach a file...',
     English: 'Describe your symptoms or attach a file...',
@@ -169,6 +168,17 @@ export default function SymptomIntake() {
     Igbo: 'Kọwaa mgbaàmà gị...',
     YO: 'Ṣe apejuwe awọn aami aisan rẹ...',
     HA: 'Kwatanta bayanin alamun ku...'
+  };
+
+  const WELCOME_MESSAGES = {
+    EN: 'Welcome to Àlàáfíà AI. Please describe your symptoms or how you are feeling today.',
+    English: 'Welcome to Àlàáfíà AI. Please describe your symptoms or how you are feeling today.',
+    Pidgin: 'Welcome to Àlàáfíà AI. Abeg tell us wetin dey do you or how you dey feel today.',
+    Yoruba: 'Ẹ kaabọ si Àlàáfíà AI. Jọwọ ṣapejuwe awọn aami aisan rẹ tabi bi o ṣe rilara loni.',
+    Hausa: 'Barka da zuwa Àlàáfíà AI. Da fatan za a kwatanta alamun ku ko yadda kuke jin a yau.',
+    Igbo: 'Nnọọ na Àlàáfíà AI. Biko kọwaa mgbaàmà gị ma ọ bụ otú ị na-eche taa.',
+    YO: 'Ẹ kaabọ si Àlàáfíà AI. Jọwọ ṣapejuwe awọn aami aisan rẹ tabi bi o ṣe rilara loni.',
+    HA: 'Barka da zuwa Àlàáfíà AI. Da fatan za a kwatanta alamun ku ko yadda kuke jin a yau.'
   };
 
   const [messages, setMessages] = useState([]);
@@ -213,8 +223,15 @@ export default function SymptomIntake() {
   const conversationRef = useRef([]);
 
   function initializeConversation() {
-    setMessages([]);
-    conversationRef.current = [];
+    const welcomeText = WELCOME_MESSAGES[selectedLang] || WELCOME_MESSAGES['English'];
+    const botMsg = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content: welcomeText,
+      timestamp: new Date(),
+    };
+    setMessages([botMsg]);
+    conversationRef.current = [{ role: 'assistant', content: welcomeText }];
     setSessionStarted(true);
   }
 
