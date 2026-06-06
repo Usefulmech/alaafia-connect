@@ -268,10 +268,10 @@ export default function Facilities() {
       />
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col lg:flex-row relative h-[calc(100vh-122px)] lg:h-[calc(100vh-58px)]">
+      <div className="flex-1 flex flex-col relative h-[calc(100vh-122px)] lg:h-[calc(100vh-58px)] page-content !px-0 !max-w-3xl">
 
         {/* Floating View Mode Selector */}
-        <div className="lg:hidden absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 backdrop-blur border border-outline-variant/40 rounded-full p-1 shadow-md flex gap-1">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] bg-white/95 backdrop-blur border border-outline-variant/40 rounded-full p-1 shadow-md flex gap-1">
           <button
             onClick={() => setViewMode('map')}
             className={`flex items-center gap-1.5 px-4.5 py-2 rounded-full text-xs font-bold transition-all duration-200 active:scale-95 ${viewMode === 'map' ? 'bg-primary text-white shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
@@ -290,8 +290,8 @@ export default function Facilities() {
 
         {/* ── PANEL A: Filters and Search Results ── */}
         <aside
-          className={`flex-col bg-surface-container-lowest border-r border-outline-variant/30 flex-shrink-0 z-30 w-full h-full lg:w-[380px]
-            ${viewMode === 'list' ? 'flex' : 'hidden lg:flex'}`}
+          className={`flex-col bg-surface-container-lowest flex-shrink-0 z-30 w-full h-full
+            ${viewMode === 'list' ? 'flex' : 'hidden'}`}
         >
           {/* Filter Bar */}
           <div className="p-4 pt-16 lg:pt-4 border-b border-outline-variant/30 bg-surface-container-low flex flex-col gap-3">
@@ -427,7 +427,7 @@ export default function Facilities() {
 
         {/* ── PANEL B: Leaflet OpenStreetMap View ── */}
         <main className={`flex-1 h-full min-h-0 relative z-10 flex-col bg-outline-variant/10
-          ${viewMode === 'map' ? 'flex' : 'hidden lg:flex'}`}
+          ${viewMode === 'map' ? 'flex' : 'hidden'}`}
         >
 
           {/* Route Info Overlay Card */}
