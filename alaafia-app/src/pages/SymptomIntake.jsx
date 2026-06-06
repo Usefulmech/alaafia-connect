@@ -159,11 +159,17 @@ export default function SymptomIntake() {
   const navigate = useNavigate();
 
   // -- State --
-  const WELCOME_SELF = "Welcome back! Please tell me about your symptoms so I can assess your urgency.";
-  const WELCOME_OTHER = (name) =>
-    name
-      ? `Okay, let's assess ${name}'s symptoms. Please tell me what they're experiencing.`
-      : "Okay, let's start with who you are assessing today.";
+  // -- State --
+  const PLACEHOLDERS = {
+    EN: 'Describe your symptoms or attach a file...',
+    English: 'Describe your symptoms or attach a file...',
+    Pidgin: 'Wetin dey do you? Or attach file...',
+    Yoruba: 'Ṣe apejuwe awọn aami aisan rẹ...',
+    Hausa: 'Kwatanta bayanin alamun ku...',
+    Igbo: 'Kọwaa mgbaàmà gị...',
+    YO: 'Ṣe apejuwe awọn aami aisan rẹ...',
+    HA: 'Kwatanta bayanin alamun ku...'
+  };
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -206,15 +212,8 @@ export default function SymptomIntake() {
   const recognitionRef = useRef(null);
   const conversationRef = useRef([]);
 
-  function initializeConversation(welcomeText) {
-    setMessages([
-      {
-        id: 'welcome',
-        role: 'assistant',
-        content: welcomeText,
-        timestamp: new Date(),
-      },
-    ]);
+  function initializeConversation() {
+    setMessages([]);
     conversationRef.current = [];
     setSessionStarted(true);
   }
@@ -222,7 +221,7 @@ export default function SymptomIntake() {
   function selectPerson(person) {
     if (person === 'self') {
       setSelectedPerson('self');
-      initializeConversation(WELCOME_SELF);
+      initializeConversation();
       return;
     }
     setSelectedPerson('other');
@@ -233,7 +232,7 @@ export default function SymptomIntake() {
     if (!trimmed) return;
     localStorage.setItem('otherPatientName', trimmed);
     setSelectedPerson('other');
-    initializeConversation(WELCOME_OTHER(trimmed));
+    initializeConversation();
   }
 
   function openFileDialog() {
@@ -701,7 +700,7 @@ export default function SymptomIntake() {
                     sendMessage(input);
                   }
                 }}
-                placeholder={isStreaming ? 'Àlàáfíà AI is responding...' : 'Describe your symptoms or attach a file...'}
+                placeholder={isStreaming ? 'Àlàáfíà AI is responding...' : (PLACEHOLDERS[selectedLang] || PLACEHOLDERS['English'])}
                 disabled={isStreaming}
                 className="flex-1 bg-transparent text-sm text-on-surface placeholder-on-surface-variant/50 outline-none disabled:opacity-40 min-w-0"
               />

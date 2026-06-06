@@ -113,7 +113,7 @@ export default function History() {
                 </div>
                 <p className="text-xs text-on-surface-variant mt-1">Tap to resume your ongoing consultation</p>
               </div>
-              <span className="material-symbols-outlined text-secondary text-[24px]">chevron_right</span>
+              <span className="material-symbols-outlined text-secondary text-[24px]" translate="no">chevron_right</span>
             </div>
           </section>
         )}

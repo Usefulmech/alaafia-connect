@@ -16,7 +16,7 @@ export default function Auth() {
   const DB_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID || '6a22b2fa00080379d03f';
   const COLLECTION_PROFILES = 'profiles';
 
-  async function handleSendOTP(e) {
+  async function handleLogin(e) {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -29,33 +29,32 @@ export default function Auth() {
         formattedPhone = '+' + formattedPhone;
       }
 
-      const sessionToken = await account.createPhoneToken(
-        ID.unique(),
-        formattedPhone
-      );
-      setUserId(sessionToken.userId);
-      setStep('otp');
-    } catch (err) {
-      console.error(err);
-      setError(err.message || 'Failed to send OTP. Ensure number is correct.');
-    } finally {
-      setIsLoading(false);
-    }
-  }
+      const syntheticEmail = `${formattedPhone.replace('+', '')}@alaafia.local`;
+      const syntheticPassword = `Alaafia_Auth_${formattedPhone}`;
 
-  async function handleVerifyOTP(e) {
-    e.preventDefault();
-    setError('');
-    setIsLoading(true);
-    try {
-      const session = await account.createSession(userId, otp);
+      let currentUserId = null;
+
+      try {
+        // Attempt login
+        const session = await account.createEmailPasswordSession(syntheticEmail, syntheticPassword);
+        currentUserId = session.userId;
+      } catch (loginErr) {
+        // If user doesn't exist, create and log in
+        if (loginErr.code === 401 || loginErr.message.includes('Invalid credentials') || loginErr.message.includes('user not found')) {
+          const newUser = await account.create(ID.unique(), syntheticEmail, syntheticPassword);
+          const session = await account.createEmailPasswordSession(syntheticEmail, syntheticPassword);
+          currentUserId = session.userId;
+        } else {
+          throw loginErr;
+        }
+      }
+
+      setUserId(currentUserId);
       
       // Check if user already has a profile
       try {
-        const docs = await databases.listDocuments(DB_ID, COLLECTION_PROFILES, [
-          // Basic query string if sdk allows, or just fetch and filter for now
-        ]);
-        const profile = docs.documents.find(d => d.user_id === userId);
+        const docs = await databases.listDocuments(DB_ID, COLLECTION_PROFILES);
+        const profile = docs.documents.find(d => d.user_id === currentUserId);
         
         if (profile) {
           // Existing user
@@ -70,7 +69,7 @@ export default function Auth() {
       }
     } catch (err) {
       console.error(err);
-      setError(err.message || 'Invalid OTP code.');
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +114,7 @@ export default function Auth() {
           )}
 
           {step === 'phone' && (
-            <form onSubmit={handleSendOTP} className="space-y-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Phone Number</label>
                 <div className="flex bg-surface-container-low rounded-2xl border-2 border-outline-variant focus-within:border-primary transition-colors overflow-hidden h-14">
@@ -137,44 +136,12 @@ export default function Auth() {
                 disabled={isLoading || phone.length < 10}
                 className="w-full h-14 rounded-2xl bg-primary text-white font-bold hover:bg-primary-container disabled:opacity-50 transition-all"
               >
-                {isLoading ? 'SENDING OTP...' : 'CONTINUE'}
+                {isLoading ? 'VERIFYING...' : 'CONTINUE'}
               </button>
             </form>
           )}
 
-          {step === 'otp' && (
-            <form onSubmit={handleVerifyOTP} className="space-y-4 animate-fade-in">
-              <div className="text-center mb-4">
-                <p className="text-sm text-on-surface-variant">We sent a secure code to <strong>{phone}</strong></p>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">6-Digit Code</label>
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={e => setOtp(e.target.value)}
-                  placeholder="------"
-                  maxLength={6}
-                  required
-                  className="w-full h-14 bg-surface-container-low rounded-2xl border-2 border-outline-variant focus:border-primary outline-none px-4 text-center text-xl tracking-widest font-mono"
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading || otp.length < 6}
-                className="w-full h-14 rounded-2xl bg-primary text-white font-bold hover:bg-primary-container disabled:opacity-50 transition-all"
-              >
-                {isLoading ? 'VERIFYING...' : 'VERIFY & LOGIN'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep('phone')}
-                className="w-full py-2 text-primary text-sm font-semibold hover:underline"
-              >
-                Use a different number
-              </button>
-            </form>
-          )}
+
 
           {step === 'role' && (
             <div className="space-y-4 animate-fade-in text-center">
