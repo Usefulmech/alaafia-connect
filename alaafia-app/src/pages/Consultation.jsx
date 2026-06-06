@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav.jsx'
 import PrimaryHeader from '../components/PrimaryHeader.jsx'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/+$/, '');
 
 const DR_SYSTEM = `You are Dr. Adeoti Clinton, a Nigerian general physician providing concise, evidence-minded teleconsultation on the Àlàáfíà Connect platform.
 You have access to the patient's AI triage summary and recent messages.

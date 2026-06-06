@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import BottomNav from '../components/BottomNav.jsx'
 import PrimaryHeader from '../components/PrimaryHeader.jsx'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/+$/, '');
 
 // ─── Custom Premium Marker Icons ───────────────────────────────────────────────
 const userIcon = L.divIcon({
