@@ -9,13 +9,13 @@ import BottomNav from '../components/BottomNav.jsx';
 
 const DEMO_RESPONSES = [
   "Thank you for sharing that. On a scale of 1 to 10, how severe is the discomfort? And how long have you had this symptom?",
-  "I understand  are you coping okay? Does the symptom get worse at any particular time of day, or after eating, physical activity, or rest?",
+  "I understand - are you coping okay? Does the symptom get worse at any particular time of day, or after eating, physical activity, or rest?",
   "That's helpful to know. Have you experienced this before, or is this the first time? Do you have any pre-existing conditions such as diabetes, hypertension, or asthma?\n\nTRIAGE: SEE_DOCTOR_TODAY  Based on your reported symptoms, I recommend you see a qualified doctor within 24 hours for a proper clinical examination.",
 ];
 
 const TRIAGE_CONFIG = {
   EMERGENCY: {
-    label: 'Emergency — Seek Immediate Care',
+    label: 'Emergency - Seek Immediate Care',
     color: 'bg-red-50 border-red-400',
     headerBg: 'bg-red-500',
     badgeBg: 'bg-red-100 text-red-700',
@@ -270,7 +270,7 @@ export default function SymptomIntake() {
   function checkForTriage(text) {
     if (!text.includes('TRIAGE:')) return;
     const match = text.match(
-      /TRIAGE:\s*(EMERGENCY|SEE_DOCTOR_TODAY|MONITOR_AT_HOME)\s*[—\-]\s*(.+)/
+      /TRIAGE:\s*(EMERGENCY|SEE_DOCTOR_TODAY|MONITOR_AT_HOME)\s*[—\-\:]\s*(.+)/
     );
     if (!match) return;
     const [, level, reason] = match;
@@ -635,7 +635,7 @@ export default function SymptomIntake() {
                           <div className="p-4">
                             <div className="flex items-start gap-3 mb-3">
                               <div className={`px-2.5 py-1 rounded-full text-[11px] font-bold flex-shrink-0 ${triageResult.badgeBg}`}>
-                                {triageResult.label.split('—')[0].trim()}
+                                {triageResult.label.split('-')[0].trim()}
                               </div>
                             </div>
 
@@ -648,14 +648,14 @@ export default function SymptomIntake() {
                               <svg translate="no" className="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                               </svg>
-                              This is an AI-generated suggestion � always consult a licensed physician.
+                              This is an AI-generated suggestion - always consult a licensed physician.
                             </div>
 
                             <button
                               onClick={() => navigate('/care-pathway')}
                               className={`w-full py-3 rounded-xl text-white text-xs font-bold tracking-widest uppercase shadow-md transition-all duration-150 active:scale-[0.98] ${triageResult.actionColor}`}
                             >
-                              {triageResult.action} ?
+                              {triageResult.action} →
                             </button>
                           </div>
                         </div>
@@ -701,7 +701,7 @@ export default function SymptomIntake() {
                     sendMessage(input);
                   }
                 }}
-                placeholder={isStreaming ? 'Àlàáfíà AI is responding�' : 'Describe your symptoms or attach a file�'}
+                placeholder={isStreaming ? 'Àlàáfíà AI is responding...' : 'Describe your symptoms or attach a file...'}
                 disabled={isStreaming}
                 className="flex-1 bg-transparent text-sm text-on-surface placeholder-on-surface-variant/50 outline-none disabled:opacity-40 min-w-0"
               />
@@ -742,7 +742,7 @@ export default function SymptomIntake() {
             {isListening && (
               <div className="flex items-center justify-center gap-1.5 mt-1.5">
                 <span className="w-1.5 h-1.5 bg-error rounded-full animate-ping" />
-                <span className="text-[11px] text-error font-semibold">Listening in English (NG)…</span>
+                <span className="text-[11px] text-error font-semibold">Listening in English (NG)...</span>
               </div>
             )}
           </div>

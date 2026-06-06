@@ -3,6 +3,7 @@ import './App.css'
 
 // Pages
 import Onboarding from './pages/Onboarding.jsx'
+import Auth from './pages/Auth.jsx'
 import Home from './pages/Home.jsx'
 import SymptomIntake from './pages/SymptomIntake.jsx'
 import CarePathway from './pages/CarePathway.jsx'
@@ -19,8 +20,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default → Onboarding wizard */}
-        <Route path="/" element={<Onboarding />} />
+        {/* Default → Auth */}
+        <Route path="/" element={<Navigate to="/auth" replace />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="/onboarding" element={<Onboarding />} />
 
         {/* Patient routes */}
