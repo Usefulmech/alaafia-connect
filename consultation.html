@@ -1,0 +1,739 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Consultation — Àlàáfíà Connect</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,700&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed-dim": "#ffb77d", "tertiary-container": "#d2093f",
+            "on-primary-fixed": "#00201d", "secondary-fixed": "#ffdcc3",
+            "surface-container-lowest": "#ffffff", "surface-dim": "#cfdaf2",
+            "secondary": "#904d00", "on-primary": "#ffffff",
+            "surface-tint": "#006a63", "surface-bright": "#f9f9ff",
+            "error-container": "#ffdad6", "error": "#ba1a1a",
+            "on-error-container": "#93000a", "inverse-primary": "#80d5cb",
+            "surface-variant": "#d8e3fb", "on-secondary-container": "#663500",
+            "inverse-surface": "#263143", "on-surface": "#111c2d",
+            "tertiary-fixed": "#ffdada", "on-primary-fixed-variant": "#00504a",
+            "primary-fixed-dim": "#80d5cb", "on-tertiary-container": "#ffe4e4",
+            "on-secondary": "#ffffff", "surface-container": "#e7eeff",
+            "inverse-on-surface": "#ecf1ff", "surface-container-low": "#f0f3ff",
+            "outline-variant": "#bdc9c6", "primary-fixed": "#9cf2e8",
+            "primary-container": "#0f766e", "secondary-container": "#fe932c",
+            "background": "#f9f9ff", "surface": "#f9f9ff",
+            "on-tertiary-fixed-variant": "#920028", "primary": "#005c55",
+            "on-surface-variant": "#3e4947", "on-tertiary-fixed": "#40000c",
+            "on-primary-container": "#a3faef", "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#6e3900", "tertiary-fixed-dim": "#ffb3b6",
+            "surface-container-high": "#dee8ff", "on-error": "#ffffff",
+            "outline": "#6e7977", "on-background": "#111c2d",
+            "tertiary": "#a6002f", "surface-container-highest": "#d8e3fb",
+            "on-secondary-fixed": "#2f1500"
+          },
+          fontFamily: {
+            "headline-md": ["Plus Jakarta Sans"], "label-md": ["Satoshi"],
+            "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Satoshi"], "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-md": ["Satoshi"], "label-sm": ["Satoshi"]
+          },
+          fontSize: {
+            "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+            "label-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+            "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+            "headline-lg-mobile": ["26px", { lineHeight: "34px", fontWeight: "700" }],
+            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "500" }]
+          },
+          spacing: {
+            "lg": "24px", "sm": "12px", "xl": "32px", "base": "4px",
+            "md": "16px", "xs": "8px", "gutter": "16px", "margin-mobile": "20px"
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }
+        }
+      }
+    }
+  </script>
+
+  <!-- Cencori API Key Config -->
+  <script>
+    // SECURITY NOTE: In production, route API calls through a backend proxy.
+    // For demo: configure your API key in localStorage:
+    // localStorage.setItem('CENCORI_API_KEY', 'your-key-here')
+    window.CENCORI_API_KEY = localStorage.getItem('CENCORI_API_KEY') || '';
+  </script>
+
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Plus Jakarta Sans','Noto Sans','Inter', sans-serif; background: #f9f9ff; overscroll-behavior-y: none; }
+
+    /* Typing dots */
+    .t-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #a3faef;
+      animation: tdot 1.4s infinite ease-in-out both;
+    }
+    .t-dot:nth-child(1){animation-delay:0s}
+    .t-dot:nth-child(2){animation-delay:.18s}
+    .t-dot:nth-child(3){animation-delay:.36s}
+    @keyframes tdot{0%,80%,100%{transform:translateY(0);opacity:.6}40%{transform:translateY(-7px);opacity:1}}
+
+    /* OPay green glow */
+    @keyframes payGlow{0%,100%{box-shadow:0 0 0 0 rgba(17,118,110,.3)}50%{box-shadow:0 0 0 10px rgba(17,118,110,0)}}
+    .pay-glow{animation:payGlow 2s infinite}
+
+    /* Live pulse */
+    @keyframes liveDot{0%,100%{opacity:1}50%{opacity:.3}}
+    .live-dot{animation:liveDot 1.2s infinite}
+
+    /* Processing spin */
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spin-anim{animation:spin .8s linear infinite}
+
+    /* Success check bounce */
+    @keyframes checkBounce{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .check-bounce{animation:checkBounce .5s ease-out}
+
+    /* Message pop */
+    @keyframes msgPop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+    .msg-pop{animation:msgPop .25s ease-out}
+
+    /* Slide up */
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .slide-up{animation:slideUp .4s ease-out}
+
+    /* Chat scroll */
+    #chat-area::-webkit-scrollbar{width:3px}
+    #chat-area::-webkit-scrollbar-thumb{background:#bdc9c6;border-radius:4px}
+
+    /* Recording */
+    @keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(186,26,26,.35)}50%{box-shadow:0 0 0 8px rgba(186,26,26,0)}}
+    .rec-pulse{animation:recPulse 1s infinite}
+
+    /* Payment section transition */
+    #payment-section{transition:all .4s ease}
+    #chat-section{transition:all .4s ease}
+
+    /* Waveform */
+    .wave-bar{border-radius:3px;animation:wavebar 1.1s infinite ease-in-out alternate}
+    .wave-bar:nth-child(1){height:6px;animation-delay:0s}
+    .wave-bar:nth-child(2){height:14px;animation-delay:.1s}
+    .wave-bar:nth-child(3){height:20px;animation-delay:.2s}
+    .wave-bar:nth-child(4){height:12px;animation-delay:.3s}
+    .wave-bar:nth-child(5){height:18px;animation-delay:.4s}
+    @keyframes wavebar{from{transform:scaleY(1)}to{transform:scaleY(0.4)}}
+  </style>
+</head>
+<body class="bg-background min-h-screen flex flex-col">
+
+  <!-- ─── FIXED HEADER ──────────────────────────────────────────────────── -->
+  <header class="fixed top-0 inset-x-0 z-50 bg-primary" style="height:58px;">
+    <div class="flex items-center justify-between h-full px-4">
+      <a href="history.html" class="p-2 -ml-1 rounded-full text-on-primary-container hover:bg-white/10 transition-colors">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </a>
+      <div class="flex flex-col items-center leading-none">
+        <span class="font-['Plus_Jakarta_Sans'] italic font-bold text-on-primary-container" style="font-size:17px;">Àlàáfíà Connect</span>
+        <span class="text-on-primary-container/65 font-['Satoshi']" style="font-size:10px;letter-spacing:.04em;">DOCTOR CONSULTATION</span>
+      </div>
+      <button class="p-2 -mr-1 rounded-full text-on-primary-container hover:bg-white/10 transition-colors">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── MAIN ──────────────────────────────────────────────────────────── -->
+  <main class="flex-1 flex flex-col" style="padding-top:58px;padding-bottom:64px;">
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!--  PAYMENT SECTION                                                   -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div id="payment-section" class="flex-1 px-4 py-5 flex flex-col gap-4">
+
+      <!-- Page title -->
+      <div>
+        <h1 class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface" style="font-size:22px;">Consultation Payment</h1>
+        <p class="text-on-surface-variant font-['Satoshi']" style="font-size:13px;">Secure payment via OPay wallet</p>
+      </div>
+
+      <!-- Doctor card -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/40 p-4 flex items-center gap-3 shadow-sm">
+        <!-- Avatar -->
+        <div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center font-['Plus_Jakarta_Sans'] font-bold text-on-primary-container flex-shrink-0 shadow" style="font-size:20px;">AC</div>
+        <div class="flex-1 min-w-0">
+          <p class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface" style="font-size:15px;">Dr. Adeoti Clinton</p>
+          <p class="text-on-surface-variant font-['Satoshi']" style="font-size:12px;">General Physician · MDCN #4567</p>
+          <div class="flex items-center gap-2 mt-1">
+            <div class="flex items-center gap-1 bg-primary/10 rounded-full px-2 py-0.5">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="#005c55"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              <span class="font-['Satoshi'] font-semibold text-primary" style="font-size:10px;">4.9</span>
+            </div>
+            <span class="text-on-surface-variant font-['Satoshi']" style="font-size:11px;">847 consultations</span>
+          </div>
+        </div>
+        <div class="text-right flex-shrink-0">
+          <p class="font-['Plus_Jakarta_Sans'] font-bold text-primary" style="font-size:18px;">₦1,000</p>
+          <p class="text-on-surface-variant font-['Satoshi']" style="font-size:11px;">per session</p>
+        </div>
+      </div>
+
+      <!-- Triage summary pill (from localStorage) -->
+      <div id="triage-pill" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2">
+        <span style="font-size:18px;line-height:1;">🟡</span>
+        <div>
+          <p class="font-['Satoshi'] font-semibold text-amber-800" style="font-size:12px;">AI Triage attached to consultation</p>
+          <p id="triage-pill-text" class="text-amber-700 font-['Satoshi']" style="font-size:11px;"></p>
+        </div>
+      </div>
+
+      <!-- Payment card -->
+      <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant/40 shadow-sm overflow-hidden">
+        <!-- Card header -->
+        <div class="bg-primary px-4 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3faef" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <span class="font-['Plus_Jakarta_Sans'] font-bold text-on-primary-container" style="font-size:13px;">OPay Wallet</span>
+          </div>
+          <span class="bg-on-primary-container/20 text-on-primary-container font-['Satoshi'] font-bold rounded-full px-2.5 py-0.5" style="font-size:10px;letter-spacing:.06em;">WALLET</span>
+        </div>
+
+        <!-- Card body -->
+        <div class="p-4 space-y-4">
+
+          <!-- Fee breakdown -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-on-surface-variant font-['Satoshi']" style="font-size:13px;">Professional Fee</span>
+              <span class="font-['Satoshi'] font-semibold text-on-surface" style="font-size:13px;">₦1,000.00</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-on-surface-variant font-['Satoshi']" style="font-size:13px;">Platform Fee</span>
+              <span class="font-['Satoshi'] font-semibold text-on-surface" style="font-size:13px;">₦0.00</span>
+            </div>
+            <div class="border-t border-outline-variant/50 pt-2 flex justify-between items-center">
+              <span class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface" style="font-size:15px;">Total</span>
+              <span class="font-['Plus_Jakarta_Sans'] font-bold text-primary" style="font-size:18px;">₦1,000.00</span>
+            </div>
+          </div>
+
+          <!-- OPay wallet number -->
+          <div>
+            <label class="font-['Satoshi'] font-semibold text-on-surface-variant block mb-1.5" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;">OPay Wallet Number</label>
+            <div class="flex items-center gap-2 bg-surface-container rounded-xl px-3 py-2.5 border border-outline-variant/60">
+              <!-- OPay icon placeholder -->
+              <div class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-white" style="background:#009966;font-size:10px;">O</div>
+              <input type="tel" value="+234810000567" readonly
+                class="flex-1 bg-transparent text-on-surface font-['Satoshi'] font-semibold outline-none"
+                style="font-size:14px;" />
+              <div class="flex items-center gap-1 bg-primary/10 rounded-full px-2 py-0.5 flex-shrink-0">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="#005c55"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                <span class="font-['Satoshi'] font-bold text-primary" style="font-size:9px;letter-spacing:.06em;">VERIFIED</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security note -->
+          <div class="flex items-start gap-2 bg-surface-container-low rounded-xl p-3">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <p class="text-on-surface-variant font-['Satoshi']" style="font-size:11px;">
+              Your payment is secured by OPay's 256-bit encryption. Funds are only released to the doctor after your consultation begins. Àlàáfíà Connect never stores your wallet credentials.
+            </p>
+          </div>
+
+          <!-- Pay button -->
+          <button id="pay-btn" onclick="initiatePayment()"
+            class="pay-glow w-full rounded-xl text-white font-['Plus_Jakarta_Sans'] font-bold py-4 flex items-center justify-center gap-2 transition-all active:scale-[.98]"
+            style="background:#005c55;font-size:14px;letter-spacing:.05em;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            AUTHORIZE WALLET TRANSACTION
+          </button>
+
+        </div>
+      </div><!-- /payment card -->
+
+    </div><!-- /payment-section -->
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!--  PROCESSING OVERLAY                                                -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div id="processing-overlay" class="hidden fixed inset-0 z-[60] flex flex-col items-center justify-center" style="background:rgba(249,249,255,.92);">
+      <div class="w-20 h-20 rounded-full border-4 border-outline-variant flex items-center justify-center mb-5">
+        <div class="w-12 h-12 rounded-full border-4 border-t-primary border-r-primary border-b-transparent border-l-transparent spin-anim"></div>
+      </div>
+      <p class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface" style="font-size:18px;">Processing Payment</p>
+      <p class="text-on-surface-variant font-['Satoshi'] mt-1" style="font-size:13px;">Authorizing OPay wallet transaction…</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!--  SUCCESS OVERLAY                                                   -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div id="success-overlay" class="hidden fixed inset-0 z-[60] flex flex-col items-center justify-center px-6" style="background:rgba(249,249,255,.96);">
+      <div class="w-20 h-20 rounded-full bg-primary flex items-center justify-center mb-5 check-bounce">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#a3faef" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <p class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface text-center" style="font-size:20px;">Payment Successful!</p>
+      <p class="text-on-surface-variant font-['Satoshi'] text-center mt-1 mb-5" style="font-size:13px;">₦1,000 deducted from OPay wallet •+234810000567</p>
+      <div class="bg-surface-container-low rounded-2xl p-4 w-full max-w-sm border border-outline-variant/40 mb-5">
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-on-surface-variant font-['Satoshi']">Transaction ID</span>
+          <span class="font-['Satoshi'] font-semibold text-on-surface">TXN-ALC-009922</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-on-surface-variant font-['Satoshi']">Doctor</span>
+          <span class="font-['Satoshi'] font-semibold text-on-surface">Dr. Adeoti Clinton</span>
+        </div>
+      </div>
+      <button onclick="enterChat()"
+        class="w-full max-w-sm rounded-xl text-white font-['Plus_Jakarta_Sans'] font-bold py-4 transition-opacity hover:opacity-90"
+        style="background:#005c55;font-size:14px;letter-spacing:.04em;">
+        START CONSULTATION →
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <!--  CHAT SECTION (hidden until payment done)                          -->
+    <!-- ══════════════════════════════════════════════════════════════════ -->
+    <div id="chat-section" class="hidden flex-col flex-1">
+
+      <!-- Sticky doctor header -->
+      <div id="doctor-header" class="sticky bg-surface-container-lowest border-b border-outline-variant/40 px-4 py-3 flex items-center gap-3 shadow-sm" style="top:58px;z-index:30;">
+        <div class="w-11 h-11 rounded-full bg-primary-container flex items-center justify-center font-['Plus_Jakarta_Sans'] font-bold text-on-primary-container flex-shrink-0 shadow-sm" style="font-size:15px;">AC</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="font-['Plus_Jakarta_Sans'] font-bold text-on-surface truncate" style="font-size:14px;">Dr. Adeoti Clinton</p>
+            <!-- LIVE badge -->
+            <div class="flex items-center gap-1 bg-error rounded-full px-2 py-0.5 flex-shrink-0">
+              <div class="w-1.5 h-1.5 rounded-full bg-white live-dot"></div>
+              <span class="text-white font-['Satoshi'] font-bold" style="font-size:9px;letter-spacing:.06em;">LIVE</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <p class="text-on-surface-variant font-['Satoshi']" style="font-size:11px;">General Physician · MDCN #4567</p>
+          </div>
+        </div>
+        <!-- Encrypted badge -->
+        <div class="flex items-center gap-1 bg-surface-container rounded-full px-2.5 py-1 border border-outline-variant/50 flex-shrink-0">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          <span class="font-['Satoshi'] font-semibold text-primary" style="font-size:10px;">Encrypted</span>
+        </div>
+      </div>
+
+      <!-- Chat messages area -->
+      <div id="chat-area" class="flex-1 px-4 py-4 space-y-4 overflow-y-auto" style="min-height:300px;padding-bottom:16px;">
+        <!-- Messages injected by JS -->
+      </div>
+
+      <!-- Typing indicator -->
+      <div id="typing-wrap" class="hidden px-4 pb-2">
+        <div class="flex items-start gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0" style="font-size:10px;font-weight:bold;color:#a3faef;font-family:'Plus Jakarta Sans','Noto Sans';">AC</div>
+          <div class="bg-primary rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View patient pass button (appears after 3+ doctor exchanges) -->
+      <div id="pass-btn-wrap" class="hidden px-4 pb-3">
+        <a href="patient-pass.html"
+          class="slide-up flex items-center justify-center gap-2 w-full rounded-xl font-['Plus_Jakarta_Sans'] font-bold py-3.5 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all"
+          style="font-size:13px;letter-spacing:.04em;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          VIEW AND SHARE FINAL MEDICAL RECORD PASS
+        </a>
+      </div>
+
+    </div><!-- /chat-section -->
+
+  </main>
+
+  <!-- ─── BOTTOM INPUT (only shown in chat mode) ────────────────────────── -->
+  <div id="input-bar" class="hidden fixed inset-x-0 z-40 bg-surface-container-lowest border-t border-outline-variant/40 shadow-xl" style="bottom:64px;">
+    <div class="px-3 py-2.5">
+      <div class="flex items-center gap-2 bg-surface-container rounded-2xl px-3 py-2">
+        <!-- Voice record button -->
+        <button id="mic-btn" onclick="toggleVoice()"
+          class="text-on-surface-variant hover:text-primary transition-colors p-1 flex-shrink-0">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <!-- Input -->
+        <input id="chat-input" type="text" placeholder="Message Dr. Adeoti…"
+          class="flex-1 bg-transparent text-on-surface font-['Satoshi'] outline-none placeholder-on-surface-variant/50"
+          style="font-size:14px;"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleSend();}" />
+        <!-- Send -->
+        <button onclick="handleSend()"
+          class="bg-primary rounded-full w-9 h-9 flex items-center justify-center flex-shrink-0 hover:bg-primary-container active:scale-95 transition-all">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a3faef" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── BOTTOM NAV ────────────────────────────────────────────────────── -->
+  <nav class="fixed inset-x-0 bottom-0 z-50 bg-surface-container-lowest border-t border-outline-variant/40 flex" style="height:64px;">
+    <a href="home.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span style="font-size:10px;" class="font-['Satoshi'] font-medium">Home</span>
+    </a>
+    <a href="symptom-intake.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z"/><path d="M11 14.5v7l-3-2.5-1 3-2-8 3 1.5 1-3 2 2z"/>
+      </svg>
+      <span style="font-size:10px;" class="font-['Satoshi'] font-medium">Assess</span>
+    </a>
+    <!-- Active: History -->
+    <div class="flex-1 flex flex-col items-center justify-center gap-0.5 text-primary relative">
+      <div class="absolute top-1 w-14 h-7 bg-primary-container/20 rounded-full"></div>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="relative z-10">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/>
+      </svg>
+      <span style="font-size:10px;" class="font-['Satoshi'] font-semibold relative z-10">History</span>
+    </div>
+    <a href="map.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-on-surface-variant hover:text-primary transition-colors">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span style="font-size:10px;" class="font-['Satoshi'] font-medium">Facilities</span>
+    </a>
+  </nav>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    const DR_SYSTEM = `You are Dr. Adeoti Clinton, a certified Nigerian medical doctor consulting on the Àlàáfíà Connect telemedicine platform. You have reviewed the patient's AI triage summary.
+
+Your consultation style:
+- Be professional, empathetic, and thorough.
+- Ask focused follow-up questions after reviewing the triage.
+- After 2–3 exchanges, provide a clinical assessment and recommendation.
+- Prescribe common medications available in Nigeria when appropriate (specify dosage, frequency, duration).
+- Always advise on red-flag symptoms requiring immediate emergency care.
+- Recommend follow-up if needed.
+- Sign each clinical response as "— Dr. Adeoti"
+- Keep responses to 3–5 sentences unless providing a full summary.`;
+
+    let docMessages = [{ role: 'system', content: DR_SYSTEM }];
+    let docExchangeCount = 0;
+    let isRecording = false;
+    let speechRec = null;
+    let paymentDone = false;
+
+    const chatArea   = document.getElementById('chat-area');
+    const typingWrap = document.getElementById('typing-wrap');
+    const chatInput  = document.getElementById('chat-input');
+    const passBtnWrap= document.getElementById('pass-btn-wrap');
+
+    const now = () => new Date().toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+    function scrollBottom() {
+      requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }));
+    }
+
+    // ── Show triage pill on payment screen ────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const tr = JSON.parse(localStorage.getItem('triageResult') || '{}');
+        if (tr.title) {
+          document.getElementById('triage-pill').classList.remove('hidden');
+          document.getElementById('triage-pill').classList.add('flex');
+          document.getElementById('triage-pill-text').textContent = tr.summary || tr.title;
+        }
+      } catch (_) {}
+    });
+
+    // ── Payment flow ───────────────────────────────────────────────────────────
+    function initiatePayment() {
+      const btn = document.getElementById('pay-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="w-4 h-4 rounded-full border-2 border-white/40 border-t-white spin-anim"></div> Processing…`;
+
+      // Show processing overlay
+      document.getElementById('processing-overlay').classList.remove('hidden');
+
+      setTimeout(() => {
+        document.getElementById('processing-overlay').classList.add('hidden');
+        document.getElementById('success-overlay').classList.remove('hidden');
+      }, 1800);
+    }
+
+    function enterChat() {
+      paymentDone = true;
+      document.getElementById('success-overlay').classList.add('hidden');
+      document.getElementById('payment-section').classList.add('hidden');
+
+      const chatSec = document.getElementById('chat-section');
+      chatSec.classList.remove('hidden');
+      chatSec.classList.add('flex');
+
+      document.getElementById('input-bar').classList.remove('hidden');
+
+      // Save consultation info to localStorage
+      const consultStart = new Date().toLocaleString('en-NG');
+      localStorage.setItem('consultationStart', consultStart);
+      localStorage.setItem('doctorName', 'Dr. Adeoti Clinton');
+
+      // Inject doctor's opening message
+      setTimeout(() => {
+        const triageStr = (() => {
+          try { const t = JSON.parse(localStorage.getItem('triageResult') || '{}'); return t.summary ? `Triage summary: "${t.summary}" — Urgency: ${t.title}` : 'No triage summary on file.'; }
+          catch(_) { return 'No triage summary on file.'; }
+        })();
+
+        const openMsg = `Good day, Salami. I've reviewed your AI triage summary.\n\n${triageStr}\n\nBased on what I see, let me ask you a few follow-up questions to better understand your condition.\n\n— Dr. Adeoti`;
+        addDoctorMessage(openMsg);
+        docMessages.push({ role: 'assistant', content: openMsg });
+        docExchangeCount++;
+      }, 600);
+    }
+
+    // ── Add doctor bubble ──────────────────────────────────────────────────────
+    function addDoctorMessage(text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'flex items-start gap-2 msg-pop';
+
+      const av = document.createElement('div');
+      av.className = 'w-8 h-8 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-on-primary-container shadow-sm';
+      av.style.cssText = 'font-size:10px;font-family:Plus Jakarta Sans';
+      av.textContent = 'AC';
+
+      const bw = document.createElement('div');
+      bw.className = 'max-w-[78%] flex flex-col gap-1';
+
+      const lbl = document.createElement('p');
+      lbl.className = 'font-[\'Satoshi\'] font-semibold text-primary pl-1';
+      lbl.style.fontSize = '11px';
+      lbl.textContent = 'Dr. Adeoti Clinton';
+
+      const box = document.createElement('div');
+      box.className = 'bg-primary text-white rounded-2xl rounded-tl-none px-4 py-3 font-[\'Satoshi\'] leading-relaxed whitespace-pre-wrap';
+      box.style.fontSize = '14px';
+      box.textContent = text;
+
+      const meta = document.createElement('div');
+      meta.className = 'flex items-center gap-2 pl-1';
+      meta.innerHTML = `<span class="text-on-surface-variant font-['Satoshi']" style="font-size:10px;">${now()}</span>`;
+
+      bw.appendChild(lbl);
+      bw.appendChild(box);
+      bw.appendChild(meta);
+      wrap.appendChild(av);
+      wrap.appendChild(bw);
+      chatArea.appendChild(wrap);
+      scrollBottom();
+      return box;
+    }
+
+    // ── Add patient bubble ─────────────────────────────────────────────────────
+    function addPatientMessage(text, isVoice = false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'flex items-start gap-2 justify-end msg-pop';
+
+      const bw = document.createElement('div');
+      bw.className = 'max-w-[78%] flex flex-col gap-1 items-end';
+
+      const box = document.createElement('div');
+      if (isVoice) {
+        box.className = 'bg-surface-variant rounded-2xl rounded-tr-none px-4 py-3';
+        box.innerHTML = `
+          <div class="flex items-center gap-1.5 mb-1.5">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2.2" stroke-linecap="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            </svg>
+            <span class="text-on-surface-variant font-['Satoshi'] font-medium" style="font-size:11px;">Voice message</span>
+          </div>
+          <div class="flex items-end gap-0.5 mb-1.5" style="height:20px;">
+            ${[5,12,18,10,16,8,14].map(h=>`<div class="wave-bar w-[3px]" style="height:${h}px;background:#005c55;"></div>`).join('')}
+          </div>
+          <p class="text-on-surface font-['Satoshi']" style="font-size:13px;">${text}</p>`;
+      } else {
+        box.className = 'bg-surface-variant rounded-2xl rounded-tr-none px-4 py-3 text-on-surface font-[\'Satoshi\'] leading-relaxed';
+        box.style.fontSize = '14px';
+        box.textContent = text;
+      }
+
+      const meta = document.createElement('div');
+      meta.className = 'flex items-center gap-1.5 pr-0.5';
+      meta.innerHTML = `
+        <span class="text-on-surface-variant font-['Satoshi']" style="font-size:10px;">${now()}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="#005c55"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>`;
+
+      bw.appendChild(box);
+      bw.appendChild(meta);
+      wrap.appendChild(bw);
+      chatArea.appendChild(wrap);
+      scrollBottom();
+    }
+
+    // ── Typing indicator ───────────────────────────────────────────────────────
+    function showTyping() { typingWrap.classList.remove('hidden'); scrollBottom(); }
+    function hideTyping() { typingWrap.classList.add('hidden'); }
+
+    // ── Send handler ───────────────────────────────────────────────────────────
+    function handleSend() {
+      const text = chatInput.value.trim();
+      if (!text || !paymentDone) return;
+      chatInput.value = '';
+      addPatientMessage(text);
+      sendToDoctor(text);
+    }
+
+    // ── Cencori AI Doctor (streaming) ─────────────────────────────────────────
+    async function sendToDoctor(userText) {
+      const apiKey = window.CENCORI_API_KEY;
+      if (!apiKey) {
+        addDoctorMessage('⚠️ Cencori API key not configured. To enable AI doctor responses, open the console and run:\n  localStorage.setItem(\'CENCORI_API_KEY\', \'your-key\')\nthen reload.');
+        return;
+      }
+
+      docMessages.push({ role: 'user', content: userText });
+      docExchangeCount++;
+      showTyping();
+
+      try {
+        const res = await fetch('https://api.cencori.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4.5',
+            messages: docMessages,
+            stream: true,
+            max_tokens: 700
+          })
+        });
+
+        hideTyping();
+
+        if (!res.ok) {
+          addDoctorMessage(`⚠️ API error ${res.status}: ${res.statusText}`);
+          return;
+        }
+
+        const box     = addDoctorMessage('');
+        const reader  = res.body.getReader();
+        const decoder = new TextDecoder();
+        let full = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          for (const line of chunk.split('\n')) {
+            if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+              try {
+                const d = JSON.parse(line.slice(6));
+                const delta = d.choices?.[0]?.delta?.content || '';
+                full += delta;
+                box.textContent = full;
+                scrollBottom();
+              } catch (_) {}
+            }
+          }
+        }
+
+        box.textContent = full;
+        docMessages.push({ role: 'assistant', content: full });
+
+        // Save consultation summary to localStorage
+        if (docExchangeCount >= 3) {
+          localStorage.setItem('consultationSummary', full);
+          // Show patient pass button
+          passBtnWrap.classList.remove('hidden');
+        }
+
+      } catch (err) {
+        hideTyping();
+        addDoctorMessage(`⚠️ Connection error: ${err.message}`);
+      }
+    }
+
+    // ── Voice Input ────────────────────────────────────────────────────────────
+    function toggleVoice() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { alert('Voice input not supported. Please use Chrome or Edge.'); return; }
+
+      const btn = document.getElementById('mic-btn');
+
+      if (isRecording) {
+        speechRec?.stop();
+        isRecording = false;
+        btn.classList.remove('rec-pulse','text-error');
+        btn.classList.add('text-on-surface-variant');
+        return;
+      }
+
+      speechRec = new SR();
+      speechRec.lang = 'en-NG';
+      speechRec.continuous = false;
+      speechRec.interimResults = true;
+
+      isRecording = true;
+      btn.classList.add('rec-pulse','text-error');
+      btn.classList.remove('text-on-surface-variant');
+
+      speechRec.onresult = (e) => {
+        chatInput.value = Array.from(e.results).map(r => r[0].transcript).join('');
+      };
+
+      speechRec.onend = () => {
+        isRecording = false;
+        btn.classList.remove('rec-pulse','text-error');
+        btn.classList.add('text-on-surface-variant');
+        const t = chatInput.value.trim();
+        if (t) { chatInput.value = ''; addPatientMessage(t, true); sendToDoctor(t); }
+      };
+
+      speechRec.onerror = () => {
+        isRecording = false;
+        btn.classList.remove('rec-pulse','text-error');
+        btn.classList.add('text-on-surface-variant');
+      };
+
+      speechRec.start();
+    }
+  </script>
+</body>
+</html>

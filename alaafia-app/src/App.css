@@ -1,0 +1,117 @@
+/* App-level styles live here when a shared shell is introduced.
+   Screen-specific styling currently uses Tailwind classes in src/pages. */
+
+.bottom-nav {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px 16px;
+  pointer-events: none;
+}
+
+.bottom-nav-inner {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #bdc9c6;
+  border-radius: 9999px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: #3e4947;
+  border-radius: 9999px;
+  transition: transform 150ms ease, background-color 150ms ease, color 150ms ease;
+  cursor: pointer;
+}
+
+.bottom-nav-item:hover {
+  background: rgba(15, 118, 110, 0.06);
+  color: #005c55;
+}
+
+.bottom-nav-item--active {
+  background: #0f766e;
+  color: #a3faef;
+  box-shadow: 0 6px 18px rgba(15, 118, 110, 0.25);
+}
+
+.bottom-nav-item--active .bottom-nav-label {
+  font-weight: 700;
+}
+
+.bottom-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.bottom-nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .bottom-nav {
+    inset: 0 auto 0 0;
+    width: 88px;
+    height: 100vh;
+    padding: 16px 10px;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.94);
+    border-right: 1px solid #bdc9c6;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .bottom-nav-inner {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    width: 100%;
+    max-width: none;
+    padding: 12px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 24px;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  .bottom-nav-item {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 6px;
+    border-radius: 16px;
+  }
+
+  .bottom-nav-label {
+    font-size: 10px;
+  }
+}
+
+

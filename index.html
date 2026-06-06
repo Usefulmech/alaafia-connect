@@ -1,0 +1,387 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Àlàáfíà Connect — Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Satoshi:wght@400;500;700&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode:"class",
+  theme:{extend:{
+    colors:{
+      "secondary-fixed-dim":"#ffb77d","tertiary-container":"#d2093f","on-primary-fixed":"#00201d",
+      "secondary-fixed":"#ffdcc3","surface-container-lowest":"#ffffff","surface-dim":"#cfdaf2",
+      "secondary":"#904d00","on-primary":"#ffffff","surface-tint":"#006a63","surface-bright":"#f9f9ff",
+      "error-container":"#ffdad6","error":"#ba1a1a","on-error-container":"#93000a","inverse-primary":"#80d5cb",
+      "surface-variant":"#d8e3fb","on-secondary-container":"#663500","inverse-surface":"#263143",
+      "on-surface":"#111c2d","tertiary-fixed":"#ffdada","on-primary-fixed-variant":"#00504a",
+      "primary-fixed-dim":"#80d5cb","on-tertiary-container":"#ffe4e4","on-secondary":"#ffffff",
+      "surface-container":"#e7eeff","inverse-on-surface":"#ecf1ff","surface-container-low":"#f0f3ff",
+      "outline-variant":"#bdc9c6","primary-fixed":"#9cf2e8","primary-container":"#0f766e",
+      "secondary-container":"#fe932c","background":"#f9f9ff","surface":"#f9f9ff",
+      "on-tertiary-fixed-variant":"#920028","primary":"#005c55","on-surface-variant":"#3e4947",
+      "on-tertiary-fixed":"#40000c","on-primary-container":"#a3faef","on-tertiary":"#ffffff",
+      "on-secondary-fixed-variant":"#6e3900","tertiary-fixed-dim":"#ffb3b6","surface-container-high":"#dee8ff",
+      "on-error":"#ffffff","outline":"#6e7977","on-background":"#111c2d","tertiary":"#a6002f",
+      "surface-container-highest":"#d8e3fb","on-secondary-fixed":"#2f1500"
+    },
+    fontFamily:{"headline-md":["Plus Jakarta Sans"],"label-md":["Satoshi"],"headline-lg":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"body-lg":["Satoshi"],"headline-lg-mobile":["Plus Jakarta Sans"],"body-md":["Satoshi"],"label-sm":["Satoshi"]},
+    fontSize:{
+      "headline-md":["24px",{lineHeight:"32px",fontWeight:"600"}],
+      "label-md":["14px",{lineHeight:"20px",fontWeight:"500"}],
+      "headline-lg":["30px",{lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],
+      "headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],
+      "body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],
+      "headline-lg-mobile":["26px",{lineHeight:"34px",fontWeight:"700"}],
+      "body-md":["16px",{lineHeight:"24px",fontWeight:"400"}],
+      "label-sm":["12px",{lineHeight:"16px",letterSpacing:"0.05em",fontWeight:"500"}]
+    },
+    spacing:{"lg":"24px","sm":"12px","xl":"32px","base":"4px","md":"16px","xs":"8px","gutter":"16px","margin-mobile":"20px"},
+    borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"}
+  }}
+}
+</script>
+<style>
+  .material-symbols-outlined { font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; }
+  body { font-family:'Plus Jakarta Sans','Noto Sans',sans-serif; background-color:#f9f9ff; min-height:max(884px,100dvh); }
+  .step-transition { transition:all 0.45s cubic-bezier(0.4,0,0.2,1); }
+  .lang-pill.active { border-color:#0f766e; background-color:rgba(15,118,110,0.06); }
+  .role-card.active { border-color:#005c55; background:rgba(0,92,85,0.06); box-shadow:0 0 0 2px rgba(0,92,85,0.18); }
+</style>
+</head>
+<body class="bg-background text-on-surface antialiased flex flex-col">
+
+<!-- Decorative blobs -->
+<div class="fixed top-[-10%] right-[-10%] w-[45%] aspect-square bg-primary/5 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+<div class="fixed bottom-[-5%] left-[-5%] w-[35%] aspect-square bg-secondary-container/10 rounded-full blur-2xl -z-10 pointer-events-none"></div>
+
+<main class="flex-grow flex flex-col px-margin-mobile pt-xl pb-xl max-w-md mx-auto w-full relative overflow-hidden min-h-screen">
+
+  <!-- Logo & tagline -->
+  <div class="mb-xl text-center pt-sm">
+    <div class="flex items-center justify-center gap-sm mb-sm">
+      <span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings:'FILL' 1,'wght' 600,'GRAD' 0,'opsz' 48">favorite</span>
+      <h1 class="font-bold italic text-primary" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:28px;line-height:1.2">Àlàáfíà Connect</h1>
+    </div>
+    <p class="font-body-md text-on-surface-variant">Your health journey begins here. / Ìrìnàjò ilera rẹ bẹ̀rẹ̀ níbí.</p>
+  </div>
+
+  <!-- Stepper + Content -->
+  <div class="flex gap-lg relative">
+    <!-- Vertical Progress Bar -->
+    <div class="w-1.5 flex-shrink-0 bg-outline-variant rounded-full relative overflow-hidden" style="height:340px">
+      <div class="absolute top-0 left-0 w-full bg-primary-container transition-all duration-700 ease-in-out" style="height:14%" id="progress-line"></div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="flex-grow">
+
+      <!-- STEP 1: Who are you? -->
+      <section id="step-1" class="step-transition opacity-100 translate-x-0">
+        <div class="mb-lg">
+          <span class="inline-block px-sm py-base bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-[11px] mb-sm uppercase tracking-wider">Step 1 of 4</span>
+          <h2 class="font-bold text-on-surface mb-xs leading-tight" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:20px">Who are you joining as?</h2>
+          <p class="font-body-md text-on-surface-variant text-sm">Select your role to personalise your experience.</p>
+        </div>
+        <div class="grid grid-cols-1 gap-sm mb-xl">
+          <button onclick="selectRole('patient',this)" class="role-card flex items-center gap-md p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary transition-all active:scale-95">
+            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">person</span>
+            </div>
+            <div class="text-left">
+              <p class="font-bold text-on-surface text-base">Patient / Alaisan</p>
+              <p class="text-on-surface-variant text-sm">I am seeking medical care & consultations</p>
+            </div>
+            <span class="material-symbols-outlined text-primary ml-auto opacity-0 transition-opacity check-icon">check_circle</span>
+          </button>
+          <button onclick="selectRole('doctor',this)" class="role-card flex items-center gap-md p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary transition-all active:scale-95">
+            <div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">stethoscope</span>
+            </div>
+            <div class="text-left">
+              <p class="font-bold text-on-surface text-base">Practitioner / Dókítà</p>
+              <p class="text-on-surface-variant text-sm">I am a medical professional offering care</p>
+            </div>
+            <span class="material-symbols-outlined text-primary ml-auto opacity-0 transition-opacity check-icon">check_circle</span>
+          </button>
+        </div>
+        <button onclick="goToStep2()" id="btn-s1" disabled class="w-full h-14 bg-outline-variant text-white font-bold rounded-xl flex items-center justify-center gap-xs cursor-not-allowed transition-all">
+          CONTINUE <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </section>
+
+      <!-- STEP 2: Language -->
+      <section id="step-2" class="step-transition hidden opacity-0 translate-x-12">
+        <div class="mb-lg">
+          <span class="inline-block px-sm py-base bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-[11px] mb-sm uppercase tracking-wider">Step 2 of 4</span>
+          <h2 class="font-bold text-on-surface mb-xs leading-tight" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:20px">Select your language / Yan rẹ ede:</h2>
+          <p class="font-body-md text-on-surface-variant text-sm">Choose your preferred communication language.</p>
+        </div>
+        <div class="grid grid-cols-1 gap-sm mb-xl">
+          <button onclick="selectLanguage('English',this)" class="lang-pill group flex items-center justify-between p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary-container transition-all active:scale-95">
+            <div class="flex items-center gap-sm"><span class="text-xl">🇬🇧</span><span class="font-bold text-on-surface">English</span></div>
+            <span class="material-symbols-outlined text-primary-container opacity-0 check-icon transition-opacity">check_circle</span>
+          </button>
+          <button onclick="selectLanguage('Pidgin',this)" class="lang-pill group flex items-center justify-between p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary-container transition-all active:scale-95">
+            <div class="flex items-center gap-sm"><span class="text-xl">🇳🇬</span><span class="font-bold text-on-surface">Nigerian Pidgin</span></div>
+            <span class="material-symbols-outlined text-primary-container opacity-0 check-icon transition-opacity">check_circle</span>
+          </button>
+          <button onclick="selectLanguage('Yoruba',this)" class="lang-pill group flex items-center justify-between p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary-container transition-all active:scale-95">
+            <div class="flex items-center gap-sm"><span class="text-xl">🌍</span><span class="font-bold text-on-surface">Yorùbá</span></div>
+            <span class="material-symbols-outlined text-primary-container opacity-0 check-icon transition-opacity">check_circle</span>
+          </button>
+          <button onclick="selectLanguage('Hausa',this)" class="lang-pill group flex items-center justify-between p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary-container transition-all active:scale-95">
+            <div class="flex items-center gap-sm"><span class="text-xl">🌍</span><span class="font-bold text-on-surface">Hausa</span></div>
+            <span class="material-symbols-outlined text-primary-container opacity-0 check-icon transition-opacity">check_circle</span>
+          </button>
+          <button onclick="selectLanguage('Igbo',this)" class="lang-pill group flex items-center justify-between p-md bg-surface-container-lowest border-2 border-outline-variant rounded-xl hover:border-primary-container transition-all active:scale-95">
+            <div class="flex items-center gap-sm"><span class="text-xl">🌍</span><span class="font-bold text-on-surface">Igbo</span></div>
+            <span class="material-symbols-outlined text-primary-container opacity-0 check-icon transition-opacity">check_circle</span>
+          </button>
+        </div>
+        <button onclick="goToStep3()" id="btn-s2" disabled class="w-full h-14 bg-outline-variant text-white font-bold rounded-xl flex items-center justify-center gap-xs cursor-not-allowed transition-all">
+          CONTINUE <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button onclick="goBack(1)" class="w-full mt-sm py-sm text-primary font-bold flex items-center justify-center gap-xs text-sm">
+          <span class="material-symbols-outlined text-sm">arrow_back</span> Change Role
+        </button>
+      </section>
+
+      <!-- STEP 3: Personal Details (Patient) -->
+      <section id="step-3-patient" class="step-transition hidden opacity-0 translate-x-12">
+        <div class="mb-lg">
+          <span class="inline-block px-sm py-base bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-[11px] mb-sm uppercase tracking-wider">Step 3 of 4</span>
+          <h2 class="font-bold text-on-surface mb-xs" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:20px">Your Details</h2>
+          <p class="font-body-md text-on-surface-variant text-sm">Tell us about yourself to personalise your care.</p>
+        </div>
+        <div class="space-y-sm mb-xl">
+          <div class="flex flex-col gap-xs">
+            <label class="font-bold text-on-surface text-sm ml-1">Full Name</label>
+            <input id="pat-name" type="text" placeholder="e.g. Salami Olusegun" class="h-14 px-md bg-white border-2 border-outline-variant rounded-xl focus:border-primary outline-none font-body-md transition-all"/>
+          </div>
+          <div class="flex flex-col gap-xs">
+            <label class="font-bold text-on-surface text-sm ml-1">Date of Birth</label>
+            <input id="pat-dob" type="date" class="h-14 px-md bg-white border-2 border-outline-variant rounded-xl focus:border-primary outline-none font-body-md transition-all"/>
+          </div>
+          <div class="flex flex-col gap-xs">
+            <label class="font-bold text-on-surface text-sm ml-1">Phone Number</label>
+            <div class="flex h-14 bg-white border-2 border-outline-variant rounded-xl overflow-hidden focus-within:border-primary transition-all">
+              <span class="flex items-center px-md border-r border-outline-variant bg-surface-container-low font-body-md text-on-surface-variant">+234</span>
+              <input id="pat-phone" type="tel" placeholder="801 234 5678" class="flex-grow px-md outline-none font-body-md"/>
+            </div>
+          </div>
+          <div class="flex flex-col gap-xs">
+            <label class="font-bold text-on-surface text-sm ml-1">Gender</label>
+            <div class="flex gap-sm">
+              <label class="flex-1 flex items-center gap-xs p-sm border-2 border-outline-variant rounded-xl cursor-pointer hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                <input type="radio" name="gender" value="Male" class="accent-primary"/> <span class="text-sm font-medium">Male</span>
+              </label>
+              <label class="flex-1 flex items-center gap-xs p-sm border-2 border-outline-variant rounded-xl cursor-pointer hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                <input type="radio" name="gender" value="Female" class="accent-primary"/> <span class="text-sm font-medium">Female</span>
+              </label>
+            </div>
+          </div>
+          <div class="p-md rounded-xl bg-primary/5 flex items-start gap-md">
+            <span class="material-symbols-outlined text-primary mt-0.5" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">shield</span>
+            <p class="text-xs text-on-surface-variant leading-relaxed">Your data is secured with AES-256 encryption. We never share your personal health records with third parties.</p>
+          </div>
+        </div>
+        <button onclick="goToStep4()" class="w-full h-14 bg-primary-container text-on-primary-container font-bold rounded-xl flex items-center justify-center gap-xs hover:brightness-110 active:scale-95 transition-all shadow-md">
+          CONTINUE <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button onclick="goBack(2)" class="w-full mt-sm py-sm text-primary font-bold flex items-center justify-center gap-xs text-sm">
+          <span class="material-symbols-outlined text-sm">arrow_back</span> Change Language
+        </button>
+      </section>
+
+      <!-- STEP 3: Redirect to Doctor Onboarding -->
+      <section id="step-3-doctor" class="step-transition hidden opacity-0 translate-x-12">
+        <div class="mb-lg">
+          <span class="inline-block px-sm py-base bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-[11px] mb-sm uppercase tracking-wider">Step 3 of 4</span>
+          <h2 class="font-bold text-on-surface mb-xs" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:20px">Practitioner Registration</h2>
+          <p class="font-body-md text-on-surface-variant text-sm">Complete your professional profile to start accepting patients.</p>
+        </div>
+        <div class="bg-surface-container-low border-2 border-outline-variant rounded-xl p-lg mb-lg">
+          <div class="flex items-start gap-md mb-md">
+            <div class="w-12 h-12 bg-secondary-container/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="material-symbols-outlined text-secondary" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">badge</span>
+            </div>
+            <div>
+              <p class="font-bold text-on-surface">Professional Verification Required</p>
+              <p class="text-sm text-on-surface-variant">You will need to provide:</p>
+            </div>
+          </div>
+          <ul class="space-y-xs text-sm text-on-surface-variant">
+            <li class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-base">check</span> Email Address</li>
+            <li class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-base">check</span> NIN (National Identification Number)</li>
+            <li class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-base">check</span> MDCN Registration Number</li>
+            <li class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-base">check</span> Medical Specialty</li>
+            <li class="flex items-center gap-xs"><span class="material-symbols-outlined text-primary text-base">check</span> Professional Certificates</li>
+          </ul>
+        </div>
+        <button onclick="window.location.href='doctor-onboarding.html'" class="w-full h-14 bg-primary-container text-on-primary-container font-bold rounded-xl flex items-center justify-center gap-xs hover:brightness-110 active:scale-95 transition-all shadow-md">
+          PROCEED TO FULL REGISTRATION <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button onclick="goBack(2)" class="w-full mt-sm py-sm text-primary font-bold flex items-center justify-center gap-xs text-sm">
+          <span class="material-symbols-outlined text-sm">arrow_back</span> Go Back
+        </button>
+      </section>
+
+      <!-- STEP 4: API Key Setup (Patient) -->
+      <section id="step-4" class="step-transition hidden opacity-0 translate-x-12">
+        <div class="mb-lg">
+          <span class="inline-block px-sm py-base bg-secondary-fixed text-on-secondary-fixed rounded-full font-label-sm text-[11px] mb-sm uppercase tracking-wider">Step 4 of 4</span>
+          <h2 class="font-bold text-on-surface mb-xs" style="font-family:'Plus Jakarta Sans','Noto Sans';font-size:20px">AI Setup (Optional)</h2>
+          <p class="font-body-md text-on-surface-variant text-sm">Configure your Cencori API key to enable AI consultations. You can skip this and set it later.</p>
+        </div>
+        <div class="space-y-sm mb-xl">
+          <div class="flex flex-col gap-xs">
+            <label class="font-bold text-on-surface text-sm ml-1">Cencori API Key</label>
+            <div class="relative">
+              <input id="api-key-input" type="password" placeholder="csk_..." class="w-full h-14 px-md pr-12 bg-white border-2 border-outline-variant rounded-xl focus:border-primary outline-none font-body-md transition-all"/>
+              <button onclick="toggleKeyVisibility()" class="absolute right-md top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary">
+                <span class="material-symbols-outlined text-xl" id="key-eye-icon">visibility</span>
+              </button>
+            </div>
+            <p class="text-xs text-on-surface-variant ml-1">Get your key from <a href="https://cencori.com" target="_blank" class="text-primary underline">cencori.com</a></p>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-md flex items-start gap-sm">
+            <span class="material-symbols-outlined text-amber-600 text-lg mt-0.5">warning</span>
+            <p class="text-xs text-amber-800">This key is stored locally in your browser and is never sent to our servers. For production use, contact us for a managed deployment.</p>
+          </div>
+        </div>
+        <button onclick="completeSetup()" class="w-full h-14 bg-primary-container text-on-primary-container font-bold rounded-xl flex items-center justify-center gap-xs hover:brightness-110 active:scale-95 transition-all shadow-md">
+          COMPLETE SETUP &amp; ENTER HOME <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button onclick="skipAndEnter()" class="w-full mt-sm py-sm text-on-surface-variant font-bold flex items-center justify-center gap-xs text-sm hover:text-primary transition-colors">
+          Skip for now — Set up AI later
+        </button>
+        <button onclick="goBack(3)" class="w-full mt-xs py-xs text-primary flex items-center justify-center gap-xs text-sm">
+          <span class="material-symbols-outlined text-sm">arrow_back</span> Go Back
+        </button>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Decorative Image -->
+  <div class="mt-auto pt-xl opacity-60">
+    <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-sm bg-gradient-to-br from-primary/20 to-secondary-container/20 flex items-center justify-center">
+      <div class="text-center">
+        <span class="material-symbols-outlined text-primary/40" style="font-size:80px;font-variation-settings:'FILL' 1,'wght' 300,'GRAD' 0,'opsz' 48">local_hospital</span>
+        <p class="text-primary/50 font-bold mt-2" style="font-family:'Plus Jakarta Sans','Noto Sans'">Àlàáfíà Connect</p>
+        <p class="text-xs text-primary/40">Accessible Healthcare for All Nigerians</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  let selectedRole = null;
+  let selectedLang = null;
+
+  function selectRole(role, btn) {
+    selectedRole = role;
+    document.querySelectorAll('.role-card').forEach(c => {
+      c.classList.remove('active');
+      c.querySelector('.check-icon').classList.add('opacity-0');
+    });
+    btn.classList.add('active');
+    btn.querySelector('.check-icon').classList.remove('opacity-0');
+    const s1btn = document.getElementById('btn-s1');
+    s1btn.disabled = false;
+    s1btn.classList.remove('bg-outline-variant','cursor-not-allowed');
+    s1btn.classList.add('bg-primary-container','shadow-md');
+  }
+
+  function selectLanguage(lang, btn) {
+    selectedLang = lang;
+    document.querySelectorAll('.lang-pill').forEach(p => {
+      p.classList.remove('active');
+      p.querySelector('.check-icon').classList.add('opacity-0');
+    });
+    btn.classList.add('active');
+    btn.querySelector('.check-icon').classList.remove('opacity-0');
+    const s2btn = document.getElementById('btn-s2');
+    s2btn.disabled = false;
+    s2btn.classList.remove('bg-outline-variant','cursor-not-allowed');
+    s2btn.classList.add('bg-primary-container','shadow-md');
+  }
+
+  function animateStep(hideId, showId, progressPct) {
+    const hideEl = document.getElementById(hideId);
+    const showEl = document.getElementById(showId);
+    const prog = document.getElementById('progress-line');
+    hideEl.classList.add('opacity-0','-translate-x-12');
+    setTimeout(() => {
+      hideEl.classList.add('hidden');
+      showEl.classList.remove('hidden');
+      setTimeout(() => {
+        showEl.classList.remove('opacity-0','translate-x-12');
+        showEl.classList.add('opacity-100','translate-x-0');
+        prog.style.height = progressPct + '%';
+      }, 50);
+    }, 300);
+  }
+
+  function goToStep2() { animateStep('step-1','step-2',33); }
+  function goToStep3() {
+    if (selectedRole === 'doctor') animateStep('step-2','step-3-doctor',66);
+    else animateStep('step-2','step-3-patient',66);
+  }
+  function goToStep4() { animateStep('step-3-patient','step-4',100); }
+
+  function goBack(toStep) {
+    const map = {1:'step-1',2:'step-2',3: selectedRole==='doctor' ? 'step-3-doctor' : 'step-3-patient'};
+    const fromMap = {1:'step-2',2: selectedRole==='doctor' ? 'step-3-doctor' : 'step-3-patient',3:'step-4'};
+    const hideEl = document.getElementById(fromMap[toStep]);
+    const showEl = document.getElementById(map[toStep]);
+    const prog = document.getElementById('progress-line');
+    hideEl.classList.add('opacity-0','translate-x-12');
+    setTimeout(() => {
+      hideEl.classList.add('hidden');
+      showEl.classList.remove('hidden');
+      setTimeout(() => {
+        showEl.classList.remove('opacity-0','-translate-x-12');
+        showEl.classList.add('opacity-100','translate-x-0');
+        const pcts = {1:'14%',2:'33%',3:'66%'};
+        prog.style.height = pcts[toStep];
+      }, 50);
+    }, 300);
+  }
+
+  function toggleKeyVisibility() {
+    const inp = document.getElementById('api-key-input');
+    const icon = document.getElementById('key-eye-icon');
+    if (inp.type === 'password') { inp.type = 'text'; icon.textContent = 'visibility_off'; }
+    else { inp.type = 'password'; icon.textContent = 'visibility'; }
+  }
+
+  function completeSetup() {
+    const name = document.getElementById('pat-name').value.trim() || 'Patient';
+    const phone = document.getElementById('pat-phone').value.trim() || '';
+    const apiKey = document.getElementById('api-key-input').value.trim();
+    if (apiKey) localStorage.setItem('CENCORI_API_KEY', apiKey);
+    localStorage.setItem('patientName', name);
+    localStorage.setItem('patientPhone', phone);
+    localStorage.setItem('selectedLanguage', selectedLang || 'English');
+    localStorage.setItem('userRole', 'patient');
+    const main = document.querySelector('main');
+    main.style.transition = 'opacity 0.4s ease';
+    main.style.opacity = '0';
+    setTimeout(() => { window.location.href = 'home.html'; }, 400);
+  }
+
+  function skipAndEnter() {
+    const name = document.getElementById('pat-name').value.trim() || 'Patient';
+    localStorage.setItem('patientName', name);
+    localStorage.setItem('selectedLanguage', selectedLang || 'English');
+    localStorage.setItem('userRole', 'patient');
+    window.location.href = 'home.html';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Portal — Àlàáfíà Connect</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.cdnfonts.com/css/satoshi" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed-dim": "#ffb77d", "tertiary-container": "#d2093f",
+            "on-primary-fixed": "#00201d", "secondary-fixed": "#ffdcc3",
+            "surface-container-lowest": "#ffffff", "surface-dim": "#cfdaf2",
+            "secondary": "#904d00", "on-primary": "#ffffff",
+            "surface-tint": "#006a63", "surface-bright": "#f9f9ff",
+            "error-container": "#ffdad6", "error": "#ba1a1a",
+            "on-error-container": "#93000a", "inverse-primary": "#80d5cb",
+            "surface-variant": "#d8e3fb", "on-secondary-container": "#663500",
+            "inverse-surface": "#263143", "on-surface": "#111c2d",
+            "tertiary-fixed": "#ffdada", "on-primary-fixed-variant": "#00504a",
+            "primary-fixed-dim": "#80d5cb", "on-tertiary-container": "#ffe4e4",
+            "on-secondary": "#ffffff", "surface-container": "#e7eeff",
+            "inverse-on-surface": "#ecf1ff", "surface-container-low": "#f0f3ff",
+            "outline-variant": "#bdc9c6", "primary-fixed": "#9cf2e8",
+            "primary-container": "#0f766e", "secondary-container": "#fe932c",
+            "background": "#f9f9ff", "surface": "#f9f9ff",
+            "on-tertiary-fixed-variant": "#920028", "primary": "#005c55",
+            "on-surface-variant": "#3e4947", "on-tertiary-fixed": "#40000c",
+            "on-primary-container": "#a3faef", "on-tertiary": "#ffffff",
+            "on-secondary-fixed-variant": "#6e3900", "tertiary-fixed-dim": "#ffb3b6",
+            "surface-container-high": "#dee8ff", "on-error": "#ffffff",
+            "outline": "#6e7977", "on-background": "#111c2d",
+            "tertiary": "#a6002f", "surface-container-highest": "#d8e3fb",
+            "on-secondary-fixed": "#2f1500"
+          },
+          fontFamily: {
+            "headline-md": ["Plus Jakarta Sans"], "label-md": ["Satoshi"],
+            "headline-lg": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"],
+            "body-lg": ["Satoshi"], "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "body-md": ["Satoshi"], "label-sm": ["Satoshi"]
+          },
+          fontSize: {
+            "headline-md": ["24px", {lineHeight:"32px",fontWeight:"600"}],
+            "label-md": ["14px", {lineHeight:"20px",fontWeight:"500"}],
+            "headline-lg": ["30px", {lineHeight:"38px",letterSpacing:"-0.02em",fontWeight:"700"}],
+            "headline-sm": ["20px", {lineHeight:"28px",fontWeight:"600"}],
+            "body-lg": ["18px", {lineHeight:"28px",fontWeight:"400"}],
+            "headline-lg-mobile": ["26px", {lineHeight:"34px",fontWeight:"700"}],
+            "body-md": ["16px", {lineHeight:"24px",fontWeight:"400"}],
+            "label-sm": ["12px", {lineHeight:"16px",letterSpacing:"0.05em",fontWeight:"500"}]
+          },
+          spacing: {
+            "lg":"24px","sm":"12px","xl":"32px","base":"4px",
+            "md":"16px","xs":"8px","gutter":"16px","margin-mobile":"20px"
+          },
+          borderRadius: {"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"}
+        }
+      }
+    }
+  </script>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif; background: #f9f9ff; color: #111c2d; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #bdc9c6; border-radius: 3px; }
+    .nav-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; cursor: pointer; border-radius: 12px; transition: all 0.2s; }
+    .nav-icon.active span { color: #005c55; font-weight: 700; }
+    .nav-icon.active .nav-dot { background: #005c55; }
+    .nav-dot { width: 20px; height: 3px; border-radius: 99px; background: transparent; }
+    .toggle-track { width: 52px; height: 28px; border-radius: 99px; position: relative; cursor: pointer; transition: background 0.3s; }
+    .toggle-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: left 0.3s, background 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+    .toggle-track.on { background: #005c55; }
+    .toggle-track.off { background: #bdc9c6; }
+    .toggle-track.on .toggle-thumb { left: 27px; }
+    .section-title { font-family: 'Plus Jakarta Sans','Noto Sans', sans-serif; font-size: 17px; font-weight: 700; color: #111c2d; }
+    .card { background: #fff; border-radius: 16px; border: 1px solid rgba(189,201,198,0.4); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+    .card:hover { box-shadow: 0 4px 24px rgba(0,92,85,0.08); transform: translateY(-1px); }
+    .stat-card { background: linear-gradient(135deg, #fff 0%, #f0f3ff 100%); border-radius: 20px; border: 1px solid rgba(189,201,198,0.4); padding: 20px; min-width: 160px; flex-shrink: 0; }
+    .badge-emergency { background: #ffdad6; color: #ba1a1a; }
+    .badge-moderate { background: #fff3d6; color: #904d00; }
+    .badge-mild { background: #d6f4ef; color: #005c55; }
+    .urgency-dot-emergency { width: 10px; height: 10px; border-radius: 50%; background: #ba1a1a; box-shadow: 0 0 0 3px rgba(186,26,26,0.25); animation: pulse-red 1.5s infinite; }
+    .urgency-dot-moderate { width: 10px; height: 10px; border-radius: 50%; background: #fe932c; box-shadow: 0 0 0 3px rgba(254,147,44,0.25); animation: pulse-amber 1.5s infinite; }
+    .urgency-dot-mild { width: 10px; height: 10px; border-radius: 50%; background: #005c55; }
+    @keyframes pulse-red { 0%,100% { box-shadow: 0 0 0 3px rgba(186,26,26,0.25); } 50% { box-shadow: 0 0 0 6px rgba(186,26,26,0.1); } }
+    @keyframes pulse-amber { 0%,100% { box-shadow: 0 0 0 3px rgba(254,147,44,0.25); } 50% { box-shadow: 0 0 0 6px rgba(254,147,44,0.1); } }
+    .btn-primary { background: #005c55; color: #fff; font-family: 'Plus Jakarta Sans','Noto Sans', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 0.02em; border-radius: 9999px; padding: 0 20px; height: 42px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary:hover { background: #0f766e; box-shadow: 0 4px 14px rgba(0,92,85,0.25); }
+    .btn-outline { background: transparent; color: #005c55; font-family: 'Plus Jakarta Sans','Noto Sans', sans-serif; font-weight: 600; font-size: 13px; border: 1.5px solid #bdc9c6; border-radius: 9999px; padding: 0 16px; height: 38px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+    .btn-outline:hover { border-color: #005c55; background: #f0fdfa; }
+    .star { display: inline-block; color: #fe932c; font-size: 14px; }
+    .online-badge { display: inline-flex; align-items: center; gap: 5px; background: #d6f4ef; color: #005c55; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; border-radius: 99px; padding: 3px 10px; }
+    .online-badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #005c55; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .quick-action { display: flex; align-items: center; gap: 14px; padding: 16px; background: #fff; border: 1px solid rgba(189,201,198,0.4); border-radius: 14px; cursor: pointer; transition: all 0.2s; }
+    .quick-action:hover { background: #f0fdfa; border-color: #005c55; transform: translateX(3px); }
+    .quick-action-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .avatar-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; font-family: 'Plus Jakarta Sans','Noto Sans',sans-serif; }
+    .slide-in { animation: slideIn 0.4s cubic-bezier(0.4,0,0.2,1) forwards; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111c2d; color: #fff; border-radius: 12px; padding: 12px 24px; font-size: 14px; font-weight: 500; z-index: 999; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .active-consult-card { background: linear-gradient(135deg, #005c55 0%, #0f766e 100%); border-radius: 18px; padding: 20px; color: #a3faef; }
+    .schedule-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f0f3ff; }
+    .schedule-row:last-child { border-bottom: none; }
+  </style>
+</head>
+<body class="min-h-screen bg-background">
+
+  <!-- ════════════════════ HEADER ════════════════════ -->
+  <header class="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-lg border-b border-outline-variant/40" style="height:64px;">
+    <div class="max-w-2xl mx-auto h-full flex items-center justify-between px-4">
+      <!-- Left: menu + logo -->
+      <div class="flex items-center gap-3">
+        <button class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-surface-container-low transition" onclick="toggleDrawer()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111c2d" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="italic font-extrabold text-primary" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:18px;">Àlàáfíà Connect</span>
+      </div>
+      <!-- Right: doctor info + toggle -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:block text-right">
+          <div class="font-bold text-on-surface" style="font-size:14px;font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Dr. Clinton A.</div>
+          <div class="text-xs text-on-surface-variant" style="font-size:11px;">MDCN #4567</div>
+        </div>
+        <!-- Online Toggle -->
+        <div class="flex items-center gap-2">
+          <div id="online-toggle" class="toggle-track on" onclick="toggleOnline()">
+            <div class="toggle-thumb"></div>
+          </div>
+          <span id="online-label" class="text-xs font-bold text-primary hidden sm:inline">Online</span>
+        </div>
+        <!-- Avatar -->
+        <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center font-bold text-primary-container" style="background:#a3faef;color:#005c55;font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:15px;font-weight:800;">CA</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════════════ SIDE DRAWER ════════════════════ -->
+  <div id="drawer-overlay" class="fixed inset-0 z-50 hidden" onclick="toggleDrawer()">
+    <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+    <div id="drawer" class="absolute left-0 top-0 bottom-0 w-72 bg-white shadow-2xl" style="transform:translateX(-100%);transition:transform 0.3s;" onclick="event.stopPropagation()">
+      <div class="p-6 border-b border-outline-variant/40" style="background:linear-gradient(135deg,#005c55,#0f766e);">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-14 h-14 rounded-full flex items-center justify-center font-extrabold text-lg" style="background:#a3faef;color:#005c55;font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">CA</div>
+          <div>
+            <div class="font-bold text-white" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Dr. Clinton Adeyemi</div>
+            <div class="text-xs text-on-primary-container/80 mt-0.5">General Physician</div>
+          </div>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <span class="inline-flex items-center gap-1.5 bg-white/20 text-white rounded-full px-3 py-1 text-xs font-semibold">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            MDCN Verified
+          </span>
+          <span class="online-badge">
+            <span class="dot"></span>
+            Online
+          </span>
+        </div>
+      </div>
+      <nav class="p-4 space-y-1">
+        <a href="doctor-portal.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/8 text-primary font-semibold text-sm" style="background:rgba(0,92,85,0.08);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-low text-on-surface text-sm transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          My Patients
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-low text-on-surface text-sm transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Schedule
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-low text-on-surface text-sm transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          My Profile
+        </a>
+        <a href="doctor-onboarding.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-surface-container-low text-on-surface text-sm transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Settings
+        </a>
+      </nav>
+      <div class="absolute bottom-6 left-4 right-4">
+        <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-error-container text-error text-sm font-semibold transition">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════ MAIN SCROLL BODY ════════════════════ -->
+  <main class="max-w-2xl mx-auto pt-20 pb-28 px-4 space-y-6">
+
+    <!-- ══ WELCOME BANNER ══ -->
+    <div class="slide-in" style="animation-delay:0.05s;">
+      <div class="rounded-2xl overflow-hidden" style="background:linear-gradient(135deg,#005c55 0%,#0f766e 60%,#126860 100%);">
+        <div class="p-5 pb-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-on-primary-container font-semibold mb-0.5" style="font-size:13px;opacity:0.8;">Good morning 👋</p>
+              <h2 class="text-white font-extrabold leading-tight" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:22px;">Dr. Clinton</h2>
+              <p class="text-on-primary-container/80 text-sm mt-1">You have <strong class="text-white">3 pending</strong> consultations waiting</p>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="flex items-center gap-1.5 justify-end mb-1">
+                <span class="inline-flex items-center gap-1 bg-white/15 text-white rounded-full px-2.5 py-1 text-xs font-semibold">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  MDCN Verified
+                </span>
+              </div>
+              <div class="inline-flex items-center gap-1.5 bg-white/15 text-white rounded-full px-2.5 py-1 text-xs font-semibold">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                General Physician
+              </div>
+            </div>
+          </div>
+          <!-- Mini stats inside banner -->
+          <div class="flex gap-3 mt-4">
+            <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+              <div class="text-white font-extrabold text-xl" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">08</div>
+              <div class="text-on-primary-container/70 text-xs mt-0.5">Today</div>
+            </div>
+            <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+              <div class="text-white font-extrabold text-xl" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">03</div>
+              <div class="text-on-primary-container/70 text-xs mt-0.5">Pending</div>
+            </div>
+            <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+              <div class="text-white font-extrabold text-xl" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">₦24k</div>
+              <div class="text-on-primary-container/70 text-xs mt-0.5">This Week</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STATS ROW ══ -->
+    <div class="slide-in" style="animation-delay:0.1s;">
+      <div class="flex items-center justify-between mb-3">
+        <span class="section-title">Today's Overview</span>
+        <button class="text-primary text-sm font-semibold">See All</button>
+      </div>
+      <div class="flex gap-3 overflow-x-auto pb-2" style="-webkit-overflow-scrolling:touch;">
+        <!-- Stat 1 -->
+        <div class="stat-card">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="text-3xl font-extrabold text-on-surface mb-0.5" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">8</div>
+          <div class="text-xs text-on-surface-variant font-medium">Consultations Today</div>
+          <div class="text-xs text-primary mt-1 font-semibold">↑ 2 more than yesterday</div>
+        </div>
+        <!-- Stat 2 -->
+        <div class="stat-card">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:rgba(254,147,44,0.12);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#904d00" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="text-3xl font-extrabold text-on-surface mb-0.5" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">3</div>
+          <div class="text-xs text-on-surface-variant font-medium">Pending Reviews</div>
+          <div class="text-xs font-semibold mt-1" style="color:#904d00;">Needs attention</div>
+        </div>
+        <!-- Stat 3 -->
+        <div class="stat-card">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:rgba(0,92,85,0.08);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="text-3xl font-extrabold text-on-surface mb-0.5" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">₦24k</div>
+          <div class="text-xs text-on-surface-variant font-medium">This Week's Earnings</div>
+          <div class="text-xs text-primary mt-1 font-semibold">↑ 12% vs last week</div>
+        </div>
+        <!-- Stat 4 -->
+        <div class="stat-card">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style="background:rgba(0,92,85,0.08);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="text-3xl font-extrabold text-on-surface mb-0.5" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">4.8</div>
+          <div class="text-xs text-on-surface-variant font-medium">Patient Rating</div>
+          <div class="flex mt-1">★★★★★</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ACTIVE CONSULTATION CARD ══ -->
+    <div class="slide-in" style="animation-delay:0.15s;">
+      <div class="active-consult-card">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="inline-flex items-center gap-1.5 bg-white/20 text-white rounded-full px-3 py-1 text-xs font-bold">
+            <span style="width:8px;height:8px;border-radius:50%;background:#a3faef;animation:blink 1s infinite;display:inline-block;"></span>
+            ACTIVE CONSULTATION
+          </span>
+        </div>
+        <div class="flex items-center gap-3 mb-4">
+          <div class="avatar-circle" style="background:#a3faef;color:#005c55;width:48px;height:48px;font-size:17px;">SO</div>
+          <div>
+            <div class="text-white font-bold" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Salami Olusegun</div>
+            <div class="text-on-primary-container/70 text-xs">Record AL-90234 • In session: <span id="session-timer" class="text-white font-bold">12:34</span></div>
+          </div>
+        </div>
+        <a href="doctor-chat.html" class="flex items-center justify-center gap-2 bg-white text-primary font-bold rounded-full py-2.5 text-sm w-full" style="text-decoration:none;font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Resume Consultation
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ INCOMING CONSULTATIONS ══ -->
+    <div class="slide-in" style="animation-delay:0.2s;">
+      <div class="flex items-center justify-between mb-3">
+        <span class="section-title">Incoming Consultations</span>
+        <span class="inline-flex items-center gap-1.5 bg-secondary-fixed/40 text-secondary font-bold rounded-full px-3 py-1 text-xs">
+          3 waiting
+        </span>
+      </div>
+      <div class="space-y-3">
+
+        <!-- Patient Card 1 — Emergency -->
+        <div class="card p-4">
+          <div class="flex items-start gap-3">
+            <div class="avatar-circle" style="background:#ffdad6;color:#ba1a1a;">AO</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <span class="font-bold text-on-surface" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:15px;">Adesola Okonkwo</span>
+                  <span class="text-xs text-on-surface-variant ml-2">AL-88201</span>
+                </div>
+                <div class="flex items-center gap-1.5 badge-emergency rounded-full px-2.5 py-1 text-xs font-bold">
+                  <span class="urgency-dot-emergency"></span>
+                  Emergency
+                </div>
+              </div>
+              <p class="text-sm text-on-surface-variant mt-1 truncate">Severe chest pain with shortness of breath</p>
+              <div class="flex items-center justify-between mt-2 gap-2 flex-wrap">
+                <span class="text-xs text-on-surface-variant">⏱ Waiting <strong class="text-error">2 mins</strong></span>
+                <div class="flex gap-2">
+                  <button class="btn-outline text-xs" style="height:34px;padding:0 12px;" onclick="showToast('Opening triage report…')">Triage Report</button>
+                  <a href="doctor-chat.html" class="btn-primary" style="height:36px;font-size:13px;text-decoration:none;">
+                    Accept &amp; Start
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Card 2 — Moderate -->
+        <div class="card p-4">
+          <div class="flex items-start gap-3">
+            <div class="avatar-circle" style="background:#fff3d6;color:#904d00;">EB</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <span class="font-bold text-on-surface" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:15px;">Emeka Babatunde</span>
+                  <span class="text-xs text-on-surface-variant ml-2">AL-87443</span>
+                </div>
+                <div class="flex items-center gap-1.5 badge-moderate rounded-full px-2.5 py-1 text-xs font-bold">
+                  <span class="urgency-dot-moderate"></span>
+                  Moderate
+                </div>
+              </div>
+              <p class="text-sm text-on-surface-variant mt-1 truncate">Persistent fever for 3 days with body aches</p>
+              <div class="flex items-center justify-between mt-2 gap-2 flex-wrap">
+                <span class="text-xs text-on-surface-variant">⏱ Waiting <strong style="color:#904d00;">8 mins</strong></span>
+                <div class="flex gap-2">
+                  <button class="btn-outline text-xs" style="height:34px;padding:0 12px;" onclick="showToast('Opening triage report…')">Triage Report</button>
+                  <a href="doctor-chat.html" class="btn-primary" style="height:36px;font-size:13px;text-decoration:none;">
+                    Accept &amp; Start
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient Card 3 — Mild -->
+        <div class="card p-4">
+          <div class="flex items-start gap-3">
+            <div class="avatar-circle" style="background:#d6f4ef;color:#005c55;">FI</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <span class="font-bold text-on-surface" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;font-size:15px;">Fatima Ibrahim</span>
+                  <span class="text-xs text-on-surface-variant ml-2">AL-86112</span>
+                </div>
+                <div class="flex items-center gap-1.5 badge-mild rounded-full px-2.5 py-1 text-xs font-bold">
+                  <span class="urgency-dot-mild"></span>
+                  Mild
+                </div>
+              </div>
+              <p class="text-sm text-on-surface-variant mt-1 truncate">Mild headache and runny nose for 2 days</p>
+              <div class="flex items-center justify-between mt-2 gap-2 flex-wrap">
+                <span class="text-xs text-on-surface-variant">⏱ Waiting <strong class="text-primary">15 mins</strong></span>
+                <div class="flex gap-2">
+                  <button class="btn-outline text-xs" style="height:34px;padding:0 12px;" onclick="showToast('Opening triage report…')">Triage Report</button>
+                  <a href="doctor-chat.html" class="btn-primary" style="height:36px;font-size:13px;text-decoration:none;">
+                    Accept &amp; Start
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TODAY'S SCHEDULE ══ -->
+    <div class="slide-in" style="animation-delay:0.25s;">
+      <div class="flex items-center justify-between mb-3">
+        <span class="section-title">Today's Schedule</span>
+        <button class="text-primary text-sm font-semibold">Full Calendar</button>
+      </div>
+      <div class="bg-white rounded-2xl border border-outline-variant/40 px-4 py-2">
+        <div class="schedule-row">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-primary"></div>
+            <div>
+              <div class="font-semibold text-on-surface text-sm">Adesola Okonkwo</div>
+              <div class="text-xs text-on-surface-variant">Emergency • AL-88201</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-primary">09:00</div>
+            <div class="text-xs text-error font-semibold">Now</div>
+          </div>
+        </div>
+        <div class="schedule-row">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full" style="background:#fe932c;"></div>
+            <div>
+              <div class="font-semibold text-on-surface text-sm">Emeka Babatunde</div>
+              <div class="text-xs text-on-surface-variant">Follow-up • AL-87443</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-on-surface">10:30</div>
+            <div class="text-xs text-on-surface-variant">30 min</div>
+          </div>
+        </div>
+        <div class="schedule-row">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+            <div>
+              <div class="font-semibold text-on-surface text-sm">Ngozi Eze</div>
+              <div class="text-xs text-on-surface-variant">New Patient • AL-91002</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-on-surface">12:00</div>
+            <div class="text-xs text-on-surface-variant">45 min</div>
+          </div>
+        </div>
+        <div class="schedule-row">
+          <div class="flex items-center gap-3">
+            <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+            <div>
+              <div class="font-semibold text-on-surface text-sm">Tunde Adeyemi</div>
+              <div class="text-xs text-on-surface-variant">Routine Check • AL-89345</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-on-surface">14:30</div>
+            <div class="text-xs text-on-surface-variant">30 min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RECENT PATIENT HISTORY ══ -->
+    <div class="slide-in" style="animation-delay:0.3s;">
+      <div class="flex items-center justify-between mb-3">
+        <span class="section-title">Recent Patients</span>
+        <button class="text-primary text-sm font-semibold">View All</button>
+      </div>
+      <div class="space-y-3">
+        <!-- History 1 -->
+        <div class="card p-4">
+          <div class="flex items-center gap-3">
+            <div class="avatar-circle" style="background:#e7eeff;color:#005c55;font-size:14px;">NK</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Ngozi Kalu</span>
+                <button class="text-xs text-primary font-semibold hover:underline" onclick="showToast('Opening patient record…')">View Record</button>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-0.5">Jun 9, 2025 • Acute malaria — Coartem prescribed</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                <span class="text-xs text-on-surface-variant ml-1">5.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- History 2 -->
+        <div class="card p-4">
+          <div class="flex items-center gap-3">
+            <div class="avatar-circle" style="background:#ffdcc3;color:#904d00;font-size:14px;">JA</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Johnson Akintola</span>
+                <button class="text-xs text-primary font-semibold hover:underline" onclick="showToast('Opening patient record…')">View Record</button>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-0.5">Jun 8, 2025 • Hypertension review — Amlodipine adjusted</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span style="color:#bdc9c6;font-size:14px;">★</span>
+                <span class="text-xs text-on-surface-variant ml-1">4.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- History 3 -->
+        <div class="card p-4">
+          <div class="flex items-center gap-3">
+            <div class="avatar-circle" style="background:#d6f4ef;color:#005c55;font-size:14px;">CM</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Chioma Musa</span>
+                <button class="text-xs text-primary font-semibold hover:underline" onclick="showToast('Opening patient record…')">View Record</button>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-0.5">Jun 7, 2025 • Upper respiratory infection — Amoxicillin</p>
+              <div class="flex items-center gap-1 mt-1">
+                <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+                <span class="text-xs text-on-surface-variant ml-1">5.0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ QUICK ACTIONS ══ -->
+    <div class="slide-in" style="animation-delay:0.35s;">
+      <div class="mb-3"><span class="section-title">Quick Actions</span></div>
+      <div class="grid grid-cols-1 gap-3">
+        <!-- Update Availability -->
+        <div class="quick-action" onclick="toggleOnline(); showToast('Availability status updated')">
+          <div class="quick-action-icon bg-primary/10">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Update Availability</div>
+            <div class="text-xs text-on-surface-variant">Toggle online/offline status</div>
+          </div>
+          <div id="avail-status" class="online-badge">
+            <span class="dot"></span>
+            Online
+          </div>
+        </div>
+        <!-- View Schedule -->
+        <div class="quick-action" onclick="showToast('Opening schedule…')">
+          <div class="quick-action-icon" style="background:rgba(254,147,44,0.12);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#904d00" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">View Schedule</div>
+            <div class="text-xs text-on-surface-variant">Manage your weekly appointments</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bdc9c6" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+        <!-- My Profile -->
+        <div class="quick-action" onclick="showToast('Opening profile…')">
+          <div class="quick-action-icon bg-surface-container">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3e4947" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">My Profile</div>
+            <div class="text-xs text-on-surface-variant">Earnings, profile completeness</div>
+          </div>
+          <div class="text-right">
+            <div class="text-xs font-bold text-primary">85%</div>
+            <div class="w-16 h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-1">
+              <div class="h-full bg-primary rounded-full" style="width:85%;"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Settings -->
+        <div class="quick-action" onclick="showToast('Opening settings…')">
+          <div class="quick-action-icon bg-surface-container">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3e4947" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          </div>
+          <div class="flex-1">
+            <div class="font-semibold text-on-surface text-sm" style="font-family:'Plus Jakarta Sans','Noto Sans',sans-serif;">Settings</div>
+            <div class="text-xs text-on-surface-variant">Notifications, security, preferences</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#bdc9c6" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ════════════════════ BOTTOM NAV ════════════════════ -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-lg border-t border-outline-variant/40">
+    <div class="max-w-2xl mx-auto flex items-center justify-around px-2 py-2">
+      <!-- Dashboard -->
+      <div class="nav-icon active" onclick="setNav(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#005c55" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span class="text-xs font-semibold" style="color:#005c55;">Dashboard</span>
+        <div class="nav-dot"></div>
+      </div>
+      <!-- My Patients -->
+      <div class="nav-icon" onclick="setNav(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6e7977" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="text-xs text-outline">Patients</span>
+        <div class="nav-dot"></div>
+      </div>
+      <!-- Schedule -->
+      <div class="nav-icon" onclick="setNav(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6e7977" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span class="text-xs text-outline">Schedule</span>
+        <div class="nav-dot"></div>
+      </div>
+      <!-- Profile -->
+      <div class="nav-icon" onclick="setNav(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6e7977" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        <span class="text-xs text-outline">Profile</span>
+        <div class="nav-dot"></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ── Helpers ──
+    let isOnline = true;
+    let sessionSeconds = 754; // 12:34
+
+    function toggleOnline() {
+      isOnline = !isOnline;
+      const track = document.getElementById('online-toggle');
+      const label = document.getElementById('online-label');
+      const availStatus = document.getElementById('avail-status');
+      track.className = `toggle-track ${isOnline ? 'on' : 'off'}`;
+      label.textContent = isOnline ? 'Online' : 'Offline';
+      label.style.color = isOnline ? '#005c55' : '#6e7977';
+      availStatus.innerHTML = isOnline
+        ? `<span class="dot"></span>Online`
+        : `<span style="width:7px;height:7px;border-radius:50%;background:#6e7977;display:inline-block;"></span>Offline`;
+      availStatus.style.background = isOnline ? '#d6f4ef' : '#f0f0f0';
+      availStatus.style.color = isOnline ? '#005c55' : '#6e7977';
+    }
+
+    function toggleDrawer() {
+      const overlay = document.getElementById('drawer-overlay');
+      const drawer = document.getElementById('drawer');
+      const isOpen = overlay.style.display === 'block';
+      if (!isOpen) {
+        overlay.style.display = 'block';
+        requestAnimationFrame(() => drawer.style.transform = 'translateX(0)');
+      } else {
+        drawer.style.transform = 'translateX(-100%)';
+        setTimeout(() => overlay.style.display = 'none', 300);
+      }
+    }
+
+    function setNav(el) {
+      document.querySelectorAll('.nav-icon').forEach(n => {
+        n.classList.remove('active');
+        const svg = n.querySelector('svg');
+        if (svg) svg.setAttribute('stroke', '#6e7977');
+        const sp = n.querySelector('span');
+        if (sp) { sp.style.color = ''; sp.className = 'text-xs text-outline'; }
+      });
+      el.classList.add('active');
+      const svg = el.querySelector('svg');
+      if (svg) svg.setAttribute('stroke', '#005c55');
+      const sp = el.querySelector('span');
+      if (sp) { sp.style.color = '#005c55'; sp.className = 'text-xs font-semibold'; }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // Session timer
+    function updateTimer() {
+      sessionSeconds++;
+      const m = String(Math.floor(sessionSeconds/60)).padStart(2,'0');
+      const s = String(sessionSeconds%60).padStart(2,'0');
+      const el = document.getElementById('session-timer');
+      if (el) el.textContent = `${m}:${s}`;
+    }
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>

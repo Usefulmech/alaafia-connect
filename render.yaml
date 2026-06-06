@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: alaafia-backend
+    env: python
+    region: oregon
+    plan: free
+    path: backend
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: APP_ENV
+        value: "production"
+      - key: APP_ORIGIN
+        value: "https://alaafia-connect.onrender.com"
+      - key: APPWRITE_ENDPOINT
+        value: "https://fra.cloud.appwrite.io/v1"
+      - key: APPWRITE_PROJECT_ID
+        value: "6a22b03c00282c2004f0"
+      - key: APPWRITE_API_KEY
+        value: "set_in_render_dashboard"
+      - key: APPWRITE_DATABASE_ID
+        value: "6a22b2fa00080379d03f"
+      - key: APPWRITE_BUCKET_ID
+        value: "6a22d2e9003258b6216f"
+      - key: CENCORI_API_KEY
+        value: "set_in_render_dashboard"
+      - key: CENCORI_ENDPOINT
+        value: "https://api.cencori.com/v1"
+      - key: CENCORI_BASE_URL
+        value: "https://cencori.com"
+      - key: YARNGPT_API_KEY
+        value: "set_in_render_dashboard"
+      - key: YARNGPT_ENDPOINT
+        value: "https://yarngpt.ai/api/v1"
+      - key: AETHEX_API_KEY
+        value: "set_in_render_dashboard"
+      - key: AETHEX_ENDPOINT
+        value: "https://api.aethexai.com/api/v1"
+      - key: GTRANSLATE_DEFAULT_LANGUAGE
+        value: "en"
