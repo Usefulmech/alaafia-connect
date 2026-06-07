@@ -20,6 +20,7 @@ class ChatStreamRequest(BaseModel):
     messages: list[dict[str, str]]
     model: str | None = None
     temperature: float | None = None
+    language: str = "en"
 
 
 @router.post("/chat")
@@ -66,8 +67,18 @@ async def triage_stream(payload: TriageMessageRequest):
 async def chat_stream(payload: ChatStreamRequest):
     try:
         model = payload.model or PRIMARY_MEDICAL_MODEL
+        lang = payload.language or "en"
+        
+        system_msg = f"You are Dr. Adeoti Clinton. The patient prefers to speak in {lang}. "
+        if lang.lower() in ["pidgin", "nigerian pidgin"]:
+            system_msg += "You MUST respond purely in Nigerian Pidgin."
+        else:
+            system_msg += f"You MUST respond purely in {lang}."
+            
+        messages = [{"role": "system", "content": system_msg}] + payload.messages
+
         async def iter_chunks():
-            async for chunk in stream_chat(payload.messages, model=model, temperature=payload.temperature):
+            async for chunk in stream_chat(messages, model=model, temperature=payload.temperature):
                 yield chunk
 
         return StreamingResponse(iter_chunks(), media_type="text/event-stream")

@@ -33,6 +33,10 @@ export default function Consultation() {
   const [showPassBtn, setShowPassBtn] = useState(false)
   const [triagePill, setTriagePill] = useState(null)
   
+  // Voice integration refs
+  const mediaRecorderRef = useRef(null)
+  const audioChunksRef = useRef([])
+  
   const [payMethod, setPayMethod] = useState('card')
   const [cardNumber, setCardNumber] = useState('')
 
@@ -102,7 +106,17 @@ export default function Consultation() {
       }
     })()
 
-    const openMsg = `Good day, I've reviewed your AI triage summary.\n\n${triageStr}\n\nBased on what I see, let me ask you a few follow-up questions to better understand your condition.\n\n- Dr. Adeoti`
+    const lang = localStorage.getItem('selectedLanguage') || 'English'
+
+    const OPENING_TEMPLATES = {
+      Pidgin: (triage) => `How far, I don check the AI triage summary.\n\n${triage}\n\nBased on wetin I see, make I ask you few questions so I go understand how you dey feel well well.\n\n- Dr. Adeoti`,
+      Yoruba: (triage) => `Ẹ n lẹ o, mo ti wo àkọsílẹ AI yín.\n\n${triage}\n\nLáti ohun tí mo rí, ẹ jẹ́ kí n bi yín ní àwọn ìbéèrè díẹ̀ kí n lè mọ ipò yín dáadáa.\n\n- Dr. Adeoti`,
+      Hausa: (triage) => `Sannu, na duba rahoton AI dinka.\n\n${triage}\n\nBisa ga abin da na gani, bari in yi maka wasu 'yan tambayoyi don in kara fahimtar yanayinka.\n\n- Dr. Adeoti`,
+      Igbo: (triage) => `Nnoo, ahụla m akụkọ AI gị.\n\n${triage}\n\nSite n'ihe m na-ahụ, ka m jụọ gị ajụjụ ole na ole ka m nwee ike ịghọta ọnọdụ gị nke ọma.\n\n- Dr. Adeoti`,
+      English: (triage) => `Good day, I've reviewed your AI triage summary.\n\n${triage}\n\nBased on what I see, let me ask you a few follow-up questions to better understand your condition.\n\n- Dr. Adeoti`
+    }
+
+    const openMsg = (OPENING_TEMPLATES[lang] || OPENING_TEMPLATES['English'])(triageStr)
     const newMessages = [{ role: 'assistant', content: openMsg, time: now() }]
     setMessages(newMessages)
     setDocMessages(prev => [...prev, { role: 'user', content: 'Hello doctor.' }, { role: 'assistant', content: openMsg }])
@@ -125,7 +139,11 @@ export default function Consultation() {
       const res = await fetch(`${API_BASE_URL}/api/triage/chat-stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history, temperature: 0.2 }),
+        body: JSON.stringify({ 
+          messages: history, 
+          temperature: 0.2,
+          language: localStorage.getItem('selectedLanguage') || 'English'
+        }),
       })
       setIsTyping(false)
       if (!res.ok) {
@@ -165,35 +183,61 @@ export default function Consultation() {
     }
   }
 
-  function toggleVoice() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SR) {
-      alert('Voice input not supported. Please use Chrome or Edge.')
-      return
-    }
+  async function toggleVoice() {
     if (isRecording) {
-      speechRecRef.current?.stop()
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop()
+      }
+      setIsRecording(false)
       return
     }
-    const rec = new SR()
-    rec.lang = 'en-NG'
-    rec.continuous = false
-    rec.interimResults = true
-    setIsRecording(true)
-    rec.onresult = (e) => setInputText(Array.from(e.results).map(r => r[0].transcript).join(''))
-    rec.onend = () => {
-      setIsRecording(false)
-      const t = inputText.trim()
-      if (t) {
-        setInputText('')
-        const voiceMsg = { role: 'user', content: t, time: now(), isVoice: true }
-        setMessages(prev => [...prev, voiceMsg])
-        sendToDoctor([...docMessages, { role: 'user', content: t }], t)
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mediaRecorder = new MediaRecorder(stream)
+      mediaRecorderRef.current = mediaRecorder
+      audioChunksRef.current = []
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data)
       }
+
+      mediaRecorder.onstop = async () => {
+        const mimeType = mediaRecorder.mimeType || 'audio/webm'
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
+        
+        stream.getTracks().forEach(track => track.stop())
+
+        const formData = new FormData()
+        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm'
+        formData.append('audio', audioBlob, `voice.${ext}`)
+        // We use English as a fallback if selectedLang isn't defined here, or we can read from localStorage
+        const lang = localStorage.getItem('selectedLanguage') || 'English'
+        formData.append('language', lang)
+
+        try {
+          const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+          const res = await fetch(`${API_BASE}/api/voice/transcribe`, {
+            method: 'POST',
+            body: formData
+          })
+          if (!res.ok) throw new Error(`STT failed: ${res.statusText}`)
+          const data = await res.json()
+          if (data.transcript) {
+            setInputText(prev => prev + (prev ? ' ' : '') + data.transcript)
+          }
+        } catch (err) {
+          console.error('Transcription error:', err)
+          alert('Failed to transcribe audio.')
+        }
+      }
+
+      mediaRecorder.start()
+      setIsRecording(true)
+    } catch (err) {
+      console.error('Mic error:', err)
+      alert('Microphone permission denied or not available.')
     }
-    rec.onerror = () => setIsRecording(false)
-    rec.start()
-    speechRecRef.current = rec
   }
 
   return (
@@ -422,7 +466,7 @@ export default function Consultation() {
           <div
             ref={chatAreaRef}
             className="chat-area flex-1 px-4 pt-4 pb-4 overflow-y-auto page-content"
-            style={{ paddingTop: 130, paddingBottom: 160 }}
+            style={{ paddingTop: 160, paddingBottom: 220 }}
           >
             {messages.map((msg, i) => (
               <div key={i} className={`flex items-start gap-2 mb-4 msg-pop ${msg.role === 'user' ? 'justify-end' : ''}`}>
@@ -431,7 +475,7 @@ export default function Consultation() {
                 )}
                 <div className={`max-w-[78%] flex flex-col gap-1 ${msg.role === 'user' ? 'items-end' : ''}`}>
                   {msg.role === 'assistant' && (
-                    <p className="font-semibold text-primary pl-1" style={{ fontSize: 11 }}>Dr. Adeoti Clinton</p>
+                     <p className="font-semibold text-primary pl-1" style={{ fontSize: 11 }}>Dr. Adeoti Clinton</p>
                   )}
                   {msg.isVoice ? (
                     <div className="bg-surface-variant rounded-2xl rounded-tr-none px-4 py-3">
@@ -499,8 +543,8 @@ export default function Consultation() {
           </div>
 
           {/* Input Bar */}
-          <div className="fixed bottom-16 lg:bottom-0 left-0 lg:left-[88px] right-0 z-40 bg-surface-container-lowest border-t border-outline-variant/40 shadow-xl">
-            <div className="px-3 py-2.5 max-w-2xl mx-auto">
+          <div className="fixed bottom-0 left-0 lg:left-[88px] right-0 z-40 bg-surface-container-lowest border-t border-outline-variant/40 shadow-xl">
+            <div className="px-3 py-2.5 pb-[90px] lg:pb-6 max-w-2xl mx-auto">
               <div className="flex items-center gap-2 bg-surface-container rounded-2xl px-3 py-2">
                 <button
                   onClick={toggleVoice}

@@ -26,8 +26,12 @@ async def create_triage_response(
         "TRIAGE: [EMERGENCY|SEE_DOCTOR_TODAY|MONITOR_AT_HOME] — [brief reason]. "
         "Keep the main response concise (1-4 short sentences) and do not provide definitive diagnoses — only possible causes and recommended next steps. "
         "If TRIAGE is EMERGENCY: clearly instruct the user to call local emergency services immediately. "
-        "Strict Rule: ALWAYS respond purely in English. The system will handle translation."
     )
+
+    if language.strip().lower() in ["pidgin", "nigerian pidgin"]:
+        system_prompt += "\nStrict Rule: ALWAYS respond purely in Nigerian Pidgin."
+    else:
+        system_prompt += "\nStrict Rule: ALWAYS respond purely in English. The system will handle translation."
 
     # Translate user input to English for the AI
     message_en = translate_text(message, source=language, target="en") if message else message

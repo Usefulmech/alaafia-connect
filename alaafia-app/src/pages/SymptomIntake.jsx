@@ -219,8 +219,10 @@ export default function SymptomIntake() {
   // -- Refs --
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const recognitionRef = useRef(null);
   const conversationRef = useRef([]);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const audioPlaybackRef = useRef(null);
 
   function initializeConversation() {
     const welcomeText = WELCOME_MESSAGES[selectedLang] || WELCOME_MESSAGES['English'];
@@ -311,62 +313,97 @@ export default function SymptomIntake() {
     );
   }
 
-  // -- TTS --
-  function speakText(text) {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+  // -- TTS (Backend via Aethex/Yarngpt) --
+  async function speakText(text) {
+    if (!text) return;
     const clean = text.replace(/TRIAGE:.*$/ms, '').trim();
-    const utt = new SpeechSynthesisUtterance(clean);
-    const lang = langMap[selectedLang] || 'en-NG';
-    utt.lang = lang;
-    // Prefer a voice that matches the language if available
-    const voices = window.speechSynthesis.getVoices();
-    const shortLang = (lang || '').split('-')[0];
-    const match = voices.find(v => (v.lang || '').startsWith(shortLang) || v.lang === lang);
-    if (match) utt.voice = match;
-    utt.rate = 0.9;
-    window.speechSynthesis.speak(utt);
+    if (!clean) return;
+
+    try {
+      const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+      const res = await fetch(`${API_BASE}/api/voice/speak`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: clean,
+          language: selectedLang
+        })
+      });
+      if (!res.ok) throw new Error(`TTS failed: ${res.statusText}`);
+      
+      const data = await res.json();
+      let audioUrl = data.appwrite_url;
+      if (!audioUrl && data.media_path) {
+        audioUrl = `${API_BASE}${data.media_path}`;
+      }
+      
+      if (audioUrl) {
+        if (audioPlaybackRef.current) {
+          audioPlaybackRef.current.pause();
+        }
+        const audio = new Audio(audioUrl);
+        audioPlaybackRef.current = audio;
+        audio.play();
+      }
+    } catch (err) {
+      console.error('TTS error:', err);
+    }
   }
 
-  // -- Voice input --
-  function toggleVoice() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) {
-      alert('Voice transcription is not supported in this browser. Use Chrome or Edge with microphone permission.');
-      return;
-    }
+  // -- Voice input (Backend via Aethex/Yarngpt) --
+  async function toggleVoice() {
     if (isListening) {
-      recognitionRef.current?.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.stop();
+      }
       setIsListening(false);
       return;
     }
-    const recognition = new SR();
-    recognition.lang = langMap[selectedLang] || 'en-NG';
-    recognition.continuous = false;
-    recognition.interimResults = true;
-    recognition.onresult = (e) => {
-      const transcript = Array.from(e.results)
-        .map((r) => r[0].transcript)
-        .join('');
-      setInput(transcript);
-    };
-    recognition.onerror = (event) => {
-      setIsListening(false);
-      if (event.error === 'not-allowed' || event.error === 'permission-denied') {
-        alert('Microphone permission was denied. Please allow microphone access to use voice transcription.');
-      } else if (event.error === 'no-speech' || event.error === 'speech_timeout') {
-        alert('No speech was detected. Please try again and speak clearly.');
-      } else {
-        console.error('Speech recognition error:', event.error);
-      }
-    };
-    recognition.onnomatch = () => {
-      alert('Sorry, I could not understand that. Please try again.');
-    };
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-    recognitionRef.current = recognition;
-    setIsListening(true);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunksRef.current.push(e.data);
+      };
+
+      mediaRecorder.onstop = async () => {
+        const mimeType = mediaRecorder.mimeType || 'audio/webm';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        
+        stream.getTracks().forEach(track => track.stop());
+
+        const formData = new FormData();
+        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        formData.append('audio', audioBlob, `voice.${ext}`);
+        formData.append('language', selectedLang);
+
+        try {
+          const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+          const res = await fetch(`${API_BASE}/api/voice/transcribe`, {
+            method: 'POST',
+            body: formData
+          });
+          if (!res.ok) throw new Error(`STT failed: ${res.statusText}`);
+          const data = await res.json();
+          if (data.transcript) {
+            setInput(prev => prev + (prev ? ' ' : '') + data.transcript);
+          }
+        } catch (err) {
+          console.error('Transcription error:', err);
+          alert('Failed to transcribe audio.');
+        }
+      };
+
+      mediaRecorder.start();
+      setIsListening(true);
+    } catch (err) {
+      console.error('Mic error:', err);
+      alert('Microphone permission denied or not available.');
+    }
   }
 
   async function fetchTriageReply(message) {
@@ -593,44 +630,47 @@ export default function SymptomIntake() {
                         )}
                       </div>
 
-                      {/* Bubble */}
-                      <div className={`flex flex-col max-w-[78%] ${isUser ? 'items-end' : 'items-start'}`}>
+                      {/* Bubble Container */}
+                      <div className={`flex flex-col max-w-[85%] ${isUser ? 'items-end' : 'items-start'}`}>
                         {/* Role label */}
                         <span className="text-[10px] font-semibold text-on-surface-variant mb-1 px-1">
                           {isUser ? displayName : 'Àlàáfíà AI'}
                         </span>
 
-                        <div
-                          className={`relative px-4 py-3 shadow-sm ${isUser
-                              ? 'bg-surface-variant text-on-surface rounded-2xl rounded-tr-sm'
-                              : 'bg-primary text-on-primary rounded-2xl rounded-tl-sm'
-                            }`}
-                        >
-                          {isTyping ? (
-                            <TypingDots />
-                          ) : (
-                            <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                              {renderContent(msg.content, isStreaming, isLastBot)}
-                            </p>
+                        <div className={`flex items-center gap-2 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                          <div
+                            className={`relative px-4 py-3 shadow-sm ${isUser
+                                ? 'bg-surface-variant text-on-surface rounded-2xl rounded-tr-sm'
+                                : 'bg-primary text-on-primary rounded-2xl rounded-tl-sm'
+                              }`}
+                          >
+                            {isTyping ? (
+                              <TypingDots />
+                            ) : (
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                                {renderContent(msg.content, isStreaming, isLastBot)}
+                              </p>
+                            )}
+                          </div>
+
+                          {!isUser && msg.content && !isTyping && (
+                            <button
+                              onClick={() => speakText(msg.content)}
+                              className="p-2.5 rounded-full bg-primary/10 hover:bg-primary hover:text-white text-primary transition-colors flex-shrink-0 shadow-sm"
+                              title="Listen to this message"
+                            >
+                              <svg translate="no" className="w-4 h-4 ml-0.5" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                              </svg>
+                            </button>
                           )}
                         </div>
 
-                        {/* Timestamp + TTS row */}
+                        {/* Timestamp row */}
                         <div className={`flex items-center gap-2 mt-1 px-1 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                           <span className="text-[10px] text-on-surface-variant/60 font-medium">
                             {formatTime(msg.timestamp)}
                           </span>
-                          {!isUser && msg.content && !isTyping && (
-                            <button
-                              onClick={() => speakText(msg.content)}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1 rounded-full hover:bg-surface-container text-on-surface-variant/70"
-                              title="Listen to this message"
-                            >
-                              <svg translate="no" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                              </svg>
-                            </button>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -681,7 +721,7 @@ export default function SymptomIntake() {
                 );
               })}
 
-              <div ref={messagesEndRef} className="h-24" />
+              <div ref={messagesEndRef} className="h-32" />
             </div>
           </>
         )}
@@ -690,7 +730,7 @@ export default function SymptomIntake() {
       {sessionStarted && (
         <>
           {/* Fixed Bottom Input Bar */}
-          <div className="fixed bottom-0 left-0 right-0 lg:left-[88px] z-40 bg-surface-container-lowest/95 backdrop-blur-sm border-t border-outline-variant px-3 py-2.5 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex justify-center">
+          <div className="fixed bottom-0 left-0 right-0 lg:left-[88px] z-40 bg-surface-container-lowest/95 backdrop-blur-sm border-t border-outline-variant px-3 py-2.5 pb-[90px] lg:pb-6 flex justify-center shadow-[0_-4px_10px_rgba(0,0,0,0.03)]">
             <div className="w-full max-w-2xl">
               <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl px-3 py-2 border border-outline-variant/60 shadow-sm">
 
