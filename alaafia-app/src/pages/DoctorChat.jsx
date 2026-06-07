@@ -670,6 +670,8 @@ export default function DoctorChat() {
   const formatTime = (s) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
+  const [isTyping, setIsTyping] = useState(false);
+
   function sendMessage() {
     if (!input.trim()) return;
     const msg = {
@@ -681,6 +683,20 @@ export default function DoctorChat() {
     setMessages(prev => [...prev, msg]);
     setInput('');
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
+
+    // Mock Patient Reply for MVP
+    setIsTyping(true);
+    setTimeout(() => {
+      setIsTyping(false);
+      const replyMsg = {
+        id: (Date.now() + 1).toString(),
+        from: 'patient',
+        content: "Yes doctor, I understand. I will follow your instructions. Should I get any drugs for the pain?",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages(prev => [...prev, replyMsg]);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 80);
+    }, 2500);
   }
 
   function issuePatientPass() {
@@ -918,7 +934,7 @@ export default function DoctorChat() {
         <div
           className="chat-scroll"
           style={{
-            flex: 1, overflowY: 'auto', padding: '12px 12px 0',
+            flex: 1, overflowY: 'auto', padding: '12px 12px 160px',
             display: 'flex', flexDirection: 'column', gap: 12,
           }}
         >
@@ -996,28 +1012,30 @@ export default function DoctorChat() {
           })}
 
           {/* Typing indicator (subtle) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 4 }}>
-            <div style={{
-              width: 30, height: 30, borderRadius: 10, flexShrink: 0,
-              background: 'linear-gradient(135deg, #005c55, #0f766e)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 800, color: '#a3faef',
-            }}>
-              SO
+          {isTyping && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBottom: 4 }}>
+              <div style={{
+                width: 30, height: 30, borderRadius: 10, flexShrink: 0,
+                background: 'linear-gradient(135deg, #005c55, #0f766e)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 800, color: '#a3faef',
+              }}>
+                SO
+              </div>
+              <div style={{
+                padding: '10px 16px', borderRadius: '4px 18px 18px 18px',
+                background: C.surfaceVariant, display: 'flex', alignItems: 'center', gap: 5,
+              }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: C.onSurfaceVariant,
+                    animation: `typingDot 1.2s ease ${i * 0.2}s infinite`,
+                  }} />
+                ))}
+              </div>
             </div>
-            <div style={{
-              padding: '10px 16px', borderRadius: '4px 18px 18px 18px',
-              background: C.surfaceVariant, display: 'flex', alignItems: 'center', gap: 5,
-            }}>
-              {[0, 1, 2].map(i => (
-                <div key={i} style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: C.onSurfaceVariant,
-                  animation: `typingDot 1.2s ease ${i * 0.2}s infinite`,
-                }} />
-              ))}
-            </div>
-          </div>
+          )}
 
           <style>{`
             @keyframes typingDot {

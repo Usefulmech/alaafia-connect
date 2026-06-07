@@ -144,7 +144,7 @@ export default function PatientPass() {
               className="absolute inset-0 flex items-center justify-center pointer-events-none z-0"
               style={{ opacity: 0.025, transform: 'rotate(-30deg)', fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 48, fontWeight: 900, color: '#005c55', whiteSpace: 'nowrap', letterSpacing: '0.1em' }}
             >
-              Àlàáfíà Connect VERIFIED
+              <span translate="no">Àlàáfíà Connect</span> VERIFIED
             </div>
 
             {/* Pass Header */}
@@ -158,7 +158,7 @@ export default function PatientPass() {
                           <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                         </svg>
                       </div>
-                      <span className="italic font-bold text-on-primary-container" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 16 }}>Àlàáfíà Connect</span>
+                      <span translate="no" className="italic font-bold text-on-primary-container" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 16 }}>Àlàáfíà Connect</span>
                     </div>
                     <p className="text-on-primary-container/60" style={{ fontSize: 10, letterSpacing: '0.08em' }}>TELEMEDICINE PLATFORM — NIGERIA</p>
                   </div>
@@ -335,7 +335,7 @@ export default function PatientPass() {
             {/* Pass Footer */}
             <div className="relative z-10 px-5 py-3 border-t border-outline-variant/40 flex items-center justify-between" style={{ background: '#f0f3ff' }}>
               <p className="text-on-surface-variant" style={{ fontSize: 10 }}>
-                 This document is digitally issued by Àlàáfíà Connect.<br/>Verify at: alaafiaconnect.ng/verify
+                 This document is digitally issued by <span translate="no">Àlàáfíà Connect</span>.<br/>Verify at: alaafiaconnect.ng/verify
               </p>
               <div className="flex items-center gap-1 flex-shrink-0">
                 <svg translate="no" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#005c55" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>

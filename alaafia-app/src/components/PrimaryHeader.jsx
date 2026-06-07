@@ -40,20 +40,13 @@ export default function PrimaryHeader({ title = 'Àlàáfíà Connect', subtitle
 
         {/* Center — title block */}
         <div className="flex flex-col items-center leading-none">
-          <span
-            translate="no"
-            className="italic font-bold text-on-primary-container"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 17 }}
-          >
+          <h1 translate="no" className="text-on-primary font-bold text-[17px] tracking-tight leading-tight" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif" }}>
             {title}
-          </span>
+          </h1>
           {subtitle && (
-            <span
-              className="text-on-primary-container/60 mt-0.5 uppercase"
-              style={{ fontFamily: 'Satoshi, sans-serif', fontSize: 9, letterSpacing: '0.06em', fontWeight: 600 }}
-            >
+            <p className="text-on-primary-container text-[10px] font-bold tracking-widest uppercase opacity-90 mt-0.5">
               {subtitle}
-            </span>
+            </p>
           )}
         </div>
 

@@ -32,6 +32,9 @@ export default function Consultation() {
   const [exchangeCount, setExchangeCount] = useState(0)
   const [showPassBtn, setShowPassBtn] = useState(false)
   const [triagePill, setTriagePill] = useState(null)
+  
+  const [payMethod, setPayMethod] = useState('card')
+  const [cardNumber, setCardNumber] = useState('')
 
   const speechRecRef = useRef(null)
 
@@ -274,20 +277,8 @@ export default function Consultation() {
                   {['card', 'transfer', 'ussd'].map(method => (
                     <button
                       key={method}
-                      onClick={() => {
-                         document.querySelectorAll('.pay-tab').forEach(el => el.classList.remove('active-tab', 'text-primary', 'border-b-2', 'border-primary', 'font-bold'));
-                         document.querySelectorAll('.pay-tab').forEach(el => el.classList.add('text-on-surface-variant'));
-                         const target = document.getElementById(`tab-${method}`);
-                         if (target) {
-                           target.classList.add('active-tab', 'text-primary', 'border-b-2', 'border-primary', 'font-bold');
-                           target.classList.remove('text-on-surface-variant');
-                         }
-                         document.querySelectorAll('.pay-content').forEach(el => el.classList.add('hidden'));
-                         const content = document.getElementById(`content-${method}`);
-                         if (content) content.classList.remove('hidden');
-                      }}
-                      id={`tab-${method}`}
-                      className={`pay-tab flex-1 py-3 text-xs uppercase tracking-wider transition-colors ${method === 'card' ? 'active-tab text-primary border-b-2 border-primary font-bold' : 'text-on-surface-variant'}`}
+                      onClick={() => setPayMethod(method)}
+                      className={`flex-1 py-3 text-xs uppercase tracking-wider transition-colors ${payMethod === method ? 'text-primary border-b-2 border-primary font-bold' : 'text-on-surface-variant'}`}
                     >
                       {method}
                     </button>
@@ -296,44 +287,51 @@ export default function Consultation() {
 
                 <div className="p-4">
                   {/* Card Content */}
-                  <div id="content-card" className="pay-content space-y-3 block">
-                    <input 
-                      type="text" 
-                      placeholder="Card Number" 
-                      onChange={handleCardChange}
-                      className="w-full h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
-                    />
-                    <div className="flex gap-3">
+                  {payMethod === 'card' && (
+                    <div className="space-y-3">
                       <input 
                         type="text" 
-                        placeholder="MM/YY" 
-                        className="w-1/2 h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
+                        value={cardNumber}
+                        placeholder="Card Number" 
+                        onChange={e => setCardNumber(e.target.value.replace(/\s+/g, ''))}
+                        className="w-full h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
                       />
-                      <input 
-                        type="text" 
-                        placeholder="CVV" 
-                        className="w-1/2 h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
-                      />
+                      <div className="flex gap-3">
+                        <input 
+                          type="text" 
+                          placeholder="MM/YY" 
+                          className="w-1/2 h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="CVV" 
+                          className="w-1/2 h-12 px-3 border border-outline-variant rounded-xl text-sm focus:border-primary outline-none"
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Transfer Content */}
-                  <div id="content-transfer" className="pay-content hidden text-center py-2">
-                    <p className="text-sm text-on-surface-variant mb-2">Transfer exactly <strong className="text-primary">{"\u20A6"}1,000.00</strong> to:</p>
-                    <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 font-mono text-on-surface text-lg font-bold mb-2 tracking-widest">
-                      0123456789
+                  {payMethod === 'transfer' && (
+                    <div className="text-center py-2">
+                      <p className="text-sm text-on-surface-variant mb-2">Transfer exactly <strong className="text-primary">{"\u20A6"}1,000.00</strong> to:</p>
+                      <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 font-mono text-on-surface text-lg font-bold mb-2 tracking-widest">
+                        0123456789
+                      </div>
+                      <p className="text-xs font-bold text-on-surface-variant">Wema Bank — Alaafia Connect</p>
                     </div>
-                    <p className="text-xs font-bold text-on-surface-variant">Wema Bank — Alaafia Connect</p>
-                  </div>
+                  )}
 
                   {/* USSD Content */}
-                  <div id="content-ussd" className="pay-content hidden text-center py-2">
-                    <p className="text-sm text-on-surface-variant mb-2">Dial the code below to complete payment:</p>
-                    <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 font-mono text-primary text-lg font-bold mb-2 tracking-widest">
-                      *945*000*1000#
+                  {payMethod === 'ussd' && (
+                    <div className="text-center py-2">
+                      <p className="text-sm text-on-surface-variant mb-2">Dial the code below to complete payment:</p>
+                      <div className="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 font-mono text-primary text-lg font-bold mb-2 tracking-widest">
+                        *945*000*1000#
+                      </div>
+                      <p className="text-[10px] text-on-surface-variant">Follow the prompt on your phone to authorize the transaction.</p>
                     </div>
-                    <p className="text-[10px] text-on-surface-variant">Follow the prompt on your phone to authorize the transaction.</p>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -347,7 +345,8 @@ export default function Consultation() {
               {/* Pay Button */}
               <button
                 onClick={simulatePayment}
-                className="pay-glow w-full rounded-xl text-white font-bold py-4 flex items-center justify-center gap-2 active:scale-[.98] transition-all"
+                disabled={payMethod === 'card' && cardNumber.length < 16}
+                className={`pay-glow w-full rounded-xl text-white font-bold py-4 flex items-center justify-center gap-2 transition-all ${payMethod === 'card' && cardNumber.length < 16 ? 'opacity-50 cursor-not-allowed' : 'active:scale-[.98]'}`}
                 style={{ background: '#005c55', fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 14, letterSpacing: '0.05em' }}
               >
                 <svg translate="no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">

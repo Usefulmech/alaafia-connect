@@ -463,7 +463,7 @@ export default function SymptomIntake() {
 
       <main className="pt-16 pb-4 px-4 max-w-2xl mx-auto w-full">
         {!selectedPerson ? (
-          <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 animate-fade-in px-4">
+          <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 animate-fade-in-up px-4">
             <div className="text-center max-w-md w-full">
 
               <h2 className="text-3xl font-extrabold text-on-surface mb-3" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif" }}>Who needs care today?</h2>
@@ -503,7 +503,7 @@ export default function SymptomIntake() {
             </div>
           </div>
         ) : selectedPerson === 'other' && !sessionStarted ? (
-          <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 animate-fade-in px-4">
+          <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8 animate-fade-in-up px-4">
             <div className="text-center max-w-md w-full">
 
               <h2 className="text-3xl font-extrabold text-on-surface mb-3" style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif" }}>Who are you assessing?</h2>
@@ -575,7 +575,7 @@ export default function SymptomIntake() {
                 const showConnector = idx < messages.length - 1;
 
                 return (
-                  <div key={msg.id} className="animate-fade-in">
+                  <div key={msg.id} className="animate-fade-in-up">
                     <div className={`flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : 'flex-row'} group`}>
 
                       {/* Avatar Column */}
@@ -690,8 +690,9 @@ export default function SymptomIntake() {
       {sessionStarted && (
         <>
           {/* Fixed Bottom Input Bar */}
-          <div className="fixed bottom-0 inset-x-0 z-40 bg-surface-container-lowest/95 backdrop-blur-sm border-t border-outline-variant px-3 py-2.5 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-            <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl px-3 py-2 border border-outline-variant/60 shadow-sm">
+          <div className="fixed bottom-0 left-0 right-0 lg:left-[88px] z-40 bg-surface-container-lowest/95 backdrop-blur-sm border-t border-outline-variant px-3 py-2.5 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex justify-center">
+            <div className="w-full max-w-2xl">
+              <div className="flex items-center gap-2 bg-surface-container-low rounded-2xl px-3 py-2 border border-outline-variant/60 shadow-sm">
 
               {/* Attachment */}
               <button
@@ -761,10 +762,13 @@ export default function SymptomIntake() {
                 <span className="text-[11px] text-error font-semibold">Listening in English (NG)...</span>
               </div>
             )}
+            </div>
           </div>
 
         </>
       )}
+      
+      <BottomNav />
     </div>
   );
 }

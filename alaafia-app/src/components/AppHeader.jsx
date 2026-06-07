@@ -18,7 +18,7 @@ export default function AppHeader({ title, subtitle, actions, showBack }) {
         ) : null}
 
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">
+          <p translate="no" className="text-xs font-semibold uppercase tracking-[0.28em] text-on-surface-variant">
             Àlàáfíà Connect
           </p>
           <h1 className="truncate text-lg font-extrabold italic text-primary">

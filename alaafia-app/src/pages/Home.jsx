@@ -77,6 +77,7 @@ export default function Home() {
       >
         <div className="header-content flex items-center justify-between">
           <h1
+            translate="no"
             className="font-bold italic text-primary"
             style={{ fontFamily: "'Plus Jakarta Sans','Noto Sans','Satoshi', sans-serif", fontSize: 20 }}
           >
@@ -261,12 +262,12 @@ export default function Home() {
             <svg translate="no" width="20" height="20" viewBox="0 0 24 24" fill="#005c55">
               <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/>
             </svg>
-            <span className="font-bold text-primary italic text-sm" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <span translate="no" className="font-bold text-primary italic text-sm" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
               Àlàáfíà Connect
             </span>
           </div>
           <div className="text-center md:text-right text-xs text-on-surface-variant flex flex-col sm:flex-row items-center gap-3">
-            <p>© {new Date().getFullYear()} Àlàáfíà Connect. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} <span translate="no">Àlàáfíà Connect</span>. All rights reserved.</p>
             <div className="flex gap-3 text-[11px] text-on-surface-variant/60">
               <a href="#" className="hover:text-primary">Privacy</a>
               <a href="#" className="hover:text-primary">Terms</a>

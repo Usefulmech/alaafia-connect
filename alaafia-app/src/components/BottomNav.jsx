@@ -51,7 +51,10 @@ export default function BottomNav() {
 
   const currentPath = location.pathname
 
-  const isActive = (path) => currentPath === path
+  const isActive = (path) => {
+    if (path === '/assess' && currentPath === '/symptom-intake') return true;
+    return currentPath === path;
+  }
 
   return (
     <nav className="bottom-nav">
